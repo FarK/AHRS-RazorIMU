@@ -2,6 +2,8 @@
 *.slo
 *.lo
 *.o
+*.out
+*.hex
 
 # Compiled Dynamic libraries
 *.so
@@ -10,3 +12,6 @@
 *.lai
 *.la
 *.a
+
+#cgtags tag file
+tags
