@@ -58,7 +58,7 @@ CORE_HDRS = $(CORE_DIR)/binary.h \
 ARD_LIB_DIR = libraries
 
 ARD_LIB_CXX_SRCS = $(ARD_LIB_DIR)/EEPROM/EEPROM.cpp \
-		   $(ARD_LIB_DIR)/Wire/Wire.cpp \
+		   $(ARD_LIB_DIR)/Wire/Wire.cpp
 ARD_LIB_CC_SRCS = $(ARD_LIB_DIR)/Wire/utility/twi.c
 
 ARD_LIB_CXX_OBJ = $(ARD_LIB_CXX_SRCS:.cpp=.o)
