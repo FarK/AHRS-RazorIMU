@@ -39,14 +39,13 @@
 
 #include "declarations.h"
 #include <WProgram.h>
-#include <HMC58X3.h>
 #include <EEPROM.h>
 #include <Wire.h>
 #include <math.h>
 
 #include "timing.h"
 #include "ADXL345.h"
-#include "HMC5883L.h"
+#include "HMC5843.h"
 #include "ITG3200.h"
 #include "output.h"
 #include "AHRS.h"
@@ -82,7 +81,6 @@ void setup()
   // Initialize all the IMU sensors
   //
   Init_Accel();
-  Init_Compass();
   Init_Gyro();
  
 
@@ -107,11 +105,12 @@ int main()
 {
 	init();
 	setup();
+
+	Magnetometer mgt;
+
 	while(1){
 		if((DIYmillis()-timer)>=5)  // Main loop runs at 50Hz
 		{
-			digitalWrite(debugPin,HIGH);
-
 			timer_old = timer;
 			timer=DIYmillis();
 			G_Dt = (timer-timer_old)/1000.0;    // Real time of loop run. We use this on the DCM algorithm (gyro integration time)
@@ -132,23 +131,13 @@ int main()
 
 
 			//=============================== Read the Compass ===============================//
-			if (Compass_counter > 20)  // Read compass data at 10Hz... (5 loop runs)
-			{
+			if(mgt.dataReady()){
 				Compass_counter=0;
-				Read_Compass(&sen_data, &sen_offset);    // Read I2C magnetometer     
+				mgt.getData(&sen_data);
 			}
 
 			//=================================================================================//
 			AHRSupdate(&sen_data, G_Dt/2.0);
-
-			//=================================================================================//
-			//=======================  Calculations for DCM Algorithm  ========================//
-			/*
-			Matrix_update(DCM_Matrix, &sen_data, G_Dt); 
-			Normalize(DCM_Matrix);
-			Drift_correction(DCM_Matrix, &sen_data);
-			Euler_angles(DCM_Matrix, &eAngles);
-			*/
 
 			//=================================================================================//
 			//============================= Data Display/User Code ============================//
@@ -158,7 +147,6 @@ int main()
 			{
 				Print_counter=0;
 
-				//TODO pasar de quaternions a ángulos de euler
 				//eAngles.roll = atan(2*(q0*q1 + q2*q3)/(1-2*(q1*q1 + q2*q2)));
 				eAngles.roll = q0 + q1 + q2 + q3;
 				eAngles.pitch = asin(2*(q0*q2 - q1*q3));

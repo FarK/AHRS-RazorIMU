@@ -8,7 +8,7 @@ F_CPU = 8000000L
 
 CXX_SRCS = ADXL345.cpp \
 	   AHRS.cpp \
-	   HMC5883L.cpp \
+	   HMC5843.cpp \
 	   ITG3200.cpp \
 	   output.cpp \
 	   timing.cpp \
@@ -18,7 +18,7 @@ CXX_OBJ = $(CXX_SRCS:.cpp=.o)
 CXX_HDRS = ADXL345.h \
 	   AHRS.h \
 	   declarations.h \
-	   HMC5883L.h \
+	   HMC5843.h \
 	   ITG3200.h \
 	   output.h \
 	   timing.h \
@@ -59,7 +59,6 @@ ARD_LIB_DIR = libraries
 
 ARD_LIB_CXX_SRCS = $(ARD_LIB_DIR)/EEPROM/EEPROM.cpp \
 		   $(ARD_LIB_DIR)/Wire/Wire.cpp \
-		   $(ARD_LIB_DIR)/HMC58X3/HMC58X3.cpp
 ARD_LIB_CC_SRCS = $(ARD_LIB_DIR)/Wire/utility/twi.c
 
 ARD_LIB_CXX_OBJ = $(ARD_LIB_CXX_SRCS:.cpp=.o)
