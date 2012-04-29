@@ -59,7 +59,6 @@ s_sensor_data sen_data = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 euler_angles eAngles;
 
 //These counters allow us to sample some of the sensors at lower rates
-unsigned int  Compass_counter=0;
 unsigned int  Print_counter=0;
 
 //DCM variables
@@ -80,9 +79,7 @@ void setup()
   //================================
   // Initialize all the IMU sensors
   //
-  Init_Accel();
   Init_Gyro();
- 
 
   //===============================
   // Get the calibration value for the sensors. These are hard coded right now
@@ -97,7 +94,6 @@ void setup()
   delay(20);
   
   //init some counters
-  Compass_counter=0;
   Print_counter=0; 
 }
 
@@ -107,6 +103,7 @@ int main()
 	setup();
 
 	Magnetometer mgt;
+	Accelerometer acc;
 
 	while(1){
 		if((DIYmillis()-timer)>=5)  // Main loop runs at 50Hz
@@ -117,7 +114,6 @@ int main()
 			if(G_Dt > 1)
 				G_Dt = 0;  //keeps dt from blowing up, goes to zero to keep gyros from departing
 
-			Compass_counter++;
 			Print_counter++;
 
 
@@ -127,14 +123,12 @@ int main()
 
 			//======================= Read the Gyro and Accelerometer =======================//
 			Read_Gyro(&sen_data, &sen_offset);      // Read the data from the I2C Gyro
-			Read_Accel(&sen_data, &sen_offset);     // Read I2C accelerometer
 
+			if(acc.dataReady())
+				acc.getData(&sen_data);
 
-			//=============================== Read the Compass ===============================//
-			if(mgt.dataReady()){
-				Compass_counter=0;
+			if(mgt.dataReady())
 				mgt.getData(&sen_data);
-			}
 
 			//=================================================================================//
 			AHRSupdate(&sen_data, G_Dt/2.0);
