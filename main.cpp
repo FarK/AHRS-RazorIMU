@@ -75,11 +75,6 @@ void setup()
 
   Wire.begin();    //Init the I2C
   delay(20);
-  
-  //================================
-  // Initialize all the IMU sensors
-  //
-  Init_Gyro();
 
   //===============================
   // Get the calibration value for the sensors. These are hard coded right now
@@ -102,8 +97,9 @@ int main()
 	init();
 	setup();
 
-	Magnetometer mgt;
+	Gyroscope gyr;
 	Accelerometer acc;
+	Magnetometer mgt;
 
 	while(1){
 		if((DIYmillis()-timer)>=5)  // Main loop runs at 50Hz
@@ -116,13 +112,10 @@ int main()
 
 			Print_counter++;
 
-
 			//=================================================================================//
 			//=======================  Data adquisition of all sensors ========================//
-
-
-			//======================= Read the Gyro and Accelerometer =======================//
-			Read_Gyro(&sen_data, &sen_offset);      // Read the data from the I2C Gyro
+			if(gyr.dataReady())
+				gyr.getData(&sen_data);
 
 			if(acc.dataReady())
 				acc.getData(&sen_data);

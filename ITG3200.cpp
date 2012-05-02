@@ -1,96 +1,82 @@
-/* ******************************************************* */
-/* I2C code for ITG-3200 Gyro                              */
-/*                                                         */
-/* ******************************************************* */
-
 #include "ITG3200.h"
 #include <WProgram.h>
 #include <Wire.h>
 #include "declarations.h"
 
-//I2C addresses 
-#define GYRO_ADDRESS 0x68      //Write:0xD0  Read:0xD1
+using namespace GYR_Registers;
 
-// IGT-3200 Sensitivity (from datasheet) => 14.375 LSBs/º/s
-// Tested values : 
-#define Gyro_Gain 14.375f	//Gyro gain
-#define DIVISOR 823.6268f	//Gyro_Gain * (180/PI)
+Gyroscope::Gyroscope(){
+	//Set the sample rate divider to 1
+	Wire.beginTransmission(ADDRESS);
+	Wire.send(SMPLRT_DIV);
+	Wire.send(0x00);  // Sample rate divider is 1 (register value + 1)
+	Wire.endTransmission();
+	
+	//Set the Digital Low Pass Filter and Scale Factor
+	Wire.beginTransmission(ADDRESS);
+	Wire.send(DLPF_FS);
+	Wire.send(0x18);  //Scale range = +/-2000deg/sec, and low pass filter = 256Hz
+	Wire.endTransmission();
+	
+	//Setup the interruptions
+	Wire.beginTransmission(ADDRESS);
+	Wire.send(INT_CFG);
+	Wire.send(0x05);	//Device-ready and data-ready interruptions actived
+	Wire.endTransmission();
+	
+	//Setup the clock reference and power status
+	Wire.beginTransmission(ADDRESS);
+	Wire.send(PWR_MGM);
+	Wire.send(0x01);  // Use the PLL with the X Gyro as the clock reference
+	Wire.endTransmission();
 
-//============================================
-// Gyro
-//============================================
-void Init_Gyro()
-{
-  //Set the sample rate divider
-  Wire.beginTransmission(GYRO_ADDRESS);
-  Wire.send(0x15);  // Sample rate divider register
-  Wire.send(0);  // Sample rate divider is 1 (register value + 1)
-  Wire.endTransmission();
-  delay(20);
-  
-  //Set the DLPF
-  Wire.beginTransmission(GYRO_ADDRESS);
-  Wire.send(0x16);  // DLPF register
-  Wire.send( (0x03<<3) | (0x00<<0) );  // Set the full-scale range to +/- 2000deg/sec, and the low pass filter to 256Hz
-  Wire.endTransmission();
-  delay(20);	
-  
-  //Setup the clock reference
-  Wire.beginTransmission(GYRO_ADDRESS);
-  Wire.send(0x3E);  // Power and clock register
-  Wire.send(1);  // Use the PLL with the X Gyro as the clock reference
-  Wire.endTransmission();
-  delay(20);	
-  
-  // Because our main loop runs at 50Hz we adjust the output data rate to 50Hz (25Hz bandwith)
-  //Wire.beginTransmission(AccelAddress);
-  //Wire.send(0x2C);  // Rate
-  //Wire.send(0x09);  // set to 50Hz, normal operation
-  //Wire.endTransmission();
+	//TODO: No funciona: Bucle infinito
+	//Wait for device ready
+	/*
+	int ready = 0;
+	while(!ready){
+		Wire.beginTransmission(ADDRESS);
+		Wire.send(INT_STATUS);
+		Wire.endTransmission();
+
+		Wire.requestFrom(ADDRESS, 1);
+		while(!Wire.available());
+		ready = (Wire.receive() & 0x04); //ING_RDY bit set
+	}
+	*/
 }
 
-// Reads the angular rates from the Gyro
-void Read_Gyro(s_sensor_data* sen_data, s_sensor_offsets* sen_offset)
-{
-  int i = 0;
-  byte buff[8];  //6 bytes of angular rate data, and 2 bytes of temperature data
-  
-  Wire.beginTransmission(GYRO_ADDRESS); 
-  Wire.send(0x1B);        //The temperature and gyro data starts at address 0x1B
-  Wire.endTransmission(); //end transmission
-  
-  Wire.beginTransmission(GYRO_ADDRESS); //start transmission to device
-  Wire.requestFrom(GYRO_ADDRESS, 8);    // request 8 bytes from device
-  
-  while(Wire.available())   // ((Wire.available())&&(i<6))
-  { 
-    buff[i] = Wire.receive();  // receive one byte
-    i++;
-  }
-  Wire.endTransmission(); //end transmission
-  
-  if (i==8)  // All bytes received?
-    {
-      //get the raw data
-      //sen_data->gxr = ((((int)buff[2]) << 8) | buff[3]) / DIVISOR;    // X axis 
-      //sen_data->gyr = ((((int)buff[4]) << 8) | buff[5]) / DIVISOR;    // Y axis 
-      //sen_data->gzr = ((((int)buff[6]) << 8) | buff[7]) / DIVISOR;    // Z axis
-      sen_data->gxr = ((int)((buff[2] << 8) | buff[3]));    // X axis 
-      sen_data->gyr = ((int)((buff[4] << 8) | buff[5]));    // Y axis 
-      sen_data->gzr = ((int)((buff[6] << 8) | buff[7]));    // Z axis
-      
-      //Restar el offset y pasar a radianes
-      sen_data->gx = (sen_data->gxr - sen_offset->gyro_offset[0]) / DIVISOR;    // X axis 
-      sen_data->gy = (sen_data->gyr - sen_offset->gyro_offset[1]) / DIVISOR;    // Y axis 
-      sen_data->gz = (sen_data->gzr - sen_offset->gyro_offset[2]) / DIVISOR;    // Z axis
-      
-      //change the sign if needed
-      //sen_data->gx *= sensor_sign[0];    // X axis 
-      //sen_data->gy *= sensor_sign[1];    // Y axis 
-      //sen_data->gz *= sensor_sign[2];    // Z axis
-   
-    }
-  /*else
-    Serial.println("!ERR: Error reading Gyro info!");
-  */
+void Gyroscope::getData(s_sensor_data* sen_data){
+	Wire.beginTransmission(ADDRESS); 
+	Wire.send(DATA);	//The temperature and gyro data start
+	Wire.endTransmission();
+	
+	Wire.requestFrom(ADDRESS, 8);    // request 8 bytes from device
+	
+	//Wait to 8 bits
+	while(Wire.available() < 8);
+	
+	//Save data
+	sen_data->tmpr = (Wire.receive() << 8) | Wire.receive();
+	sen_data->gxr = (Wire.receive() << 8) | Wire.receive();
+	sen_data->gyr = (Wire.receive() << 8) | Wire.receive();
+	sen_data->gzr = (Wire.receive() << 8) | Wire.receive();
+
+	//TODO: La conversión a grados centígrados está mal
+	//Convert to degrees centigrade
+	sen_data->tmp = (float) ((sen_data->tmpr + TEMP_OFFSET) / TEMP_SCALE) + 35.0f;
+	//Convert to rad/s
+	sen_data->gx = (float) sen_data->gxr / GYRO_SCALE;
+	sen_data->gy = (float) sen_data->gyr / GYRO_SCALE;
+	sen_data->gz = (float) sen_data->gzr / GYRO_SCALE;
+}
+
+bool Gyroscope::dataReady(){
+	Wire.beginTransmission(ADDRESS); 
+	Wire.send(INT_STATUS);
+	Wire.endTransmission();
+
+	Wire.requestFrom(ADDRESS, 1);
+	while(!Wire.available());
+	return (Wire.receive() & 0x01);	//RAW_DATA_RDY bit set
 }

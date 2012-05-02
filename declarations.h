@@ -88,7 +88,10 @@ typedef struct
     float mx;
     float my;
     float mz;
-    float magnetom_heading;
+
+    //Temperature from gyro sensor
+    int tmpr;
+    float tmp;
 }s_sensor_data;
 
 // Euler angles
