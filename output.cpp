@@ -22,7 +22,7 @@ void printdata(s_sensor_data* sen_data, euler_angles* eAngles)
 #endif
 
 #if PRINT_EULER == 1
-	Serial.print("\nEuler: (");
+	Serial.print("Euler: (");
 	Serial.print(ToDeg(eAngles->roll));
 	Serial.print(", ");
 	Serial.print(ToDeg(eAngles->pitch));
@@ -32,8 +32,8 @@ void printdata(s_sensor_data* sen_data, euler_angles* eAngles)
 #endif   
 
 #if PRINT_QUATERNION == 1
-	Serial.println("");
-	Serial.print("Quaternion: (");
+	Serial.print("\t");
+	Serial.print("Quat: (");
 	Serial.print(q0, 10);
 	Serial.print(", ");
 	Serial.print(q1, 10);
@@ -41,13 +41,11 @@ void printdata(s_sensor_data* sen_data, euler_angles* eAngles)
 	Serial.print(q2, 10);
 	Serial.print(", ");
 	Serial.print(q3, 10);
-	Serial.println(")");
-	Serial.print("Q4:");
-	Serial.println(q4, 10);
+	Serial.print(")");
 #endif
 
 #if PRINT_SENSOR_DATA==1
-	Serial.print("   ACCE: ");
+	Serial.print("\t   ACCE: ");
 	Serial.print(sen_data->ax);
 	Serial.print(", ");
 	Serial.print(sen_data->ay);
@@ -64,7 +62,9 @@ void printdata(s_sensor_data* sen_data, euler_angles* eAngles)
 	Serial.print(", ");
 	Serial.print(sen_data->my);
 	Serial.print(", ");
-	Serial.println(sen_data->mz);    
+	Serial.print(sen_data->mz);    
+	Serial.print("   TEMP: ");
+	Serial.print(sen_data->tmp);
 	/*Serial.print ("; ");
 	Serial.print(sen_data->magnetom_heading );     
 	*/
@@ -90,6 +90,8 @@ void printdata(s_sensor_data* sen_data, euler_angles* eAngles)
 	Serial.print((int)sen_data->myr);
 	Serial.print (", ");
 	Serial.print((int)sen_data->mzr);    
+	Serial.print("   TEMP: ");
+	Serial.print(sen_data->tmpr);
 #endif
 
 /*
@@ -115,6 +117,9 @@ void printdata(s_sensor_data* sen_data, euler_angles* eAngles)
 	Serial.print(convert_to_dec(DCM_Matrix[2][2]));
 #endif
 */
+
+
+	Serial.println("");
 }
 
 long convert_to_dec(float x)
