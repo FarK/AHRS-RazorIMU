@@ -1,5 +1,4 @@
 #include "ITG3200.h"
-#include <WProgram.h>
 #include <Wire.h>
 #include "declarations.h"
 

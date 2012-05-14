@@ -9,9 +9,7 @@ F_CPU = 8000000L
 CXX_SRCS = ADXL345.cpp \
 	   AHRS.cpp \
 	   HMC5843.cpp \
-	   ITG3200.cpp \
-	   output.cpp \
-	   timing.cpp \
+	   ITG3200.cpp
 
 CXX_OBJ = $(CXX_SRCS:.cpp=.o)
 
@@ -19,9 +17,7 @@ CXX_HDRS = ADXL345.h \
 	   AHRS.h \
 	   declarations.h \
 	   HMC5843.h \
-	   ITG3200.h \
-	   output.h \
-	   timing.h \
+	   ITG3200.h
 
 CORE_DIR = libarduinocore
 
@@ -57,8 +53,7 @@ CORE_HDRS = $(CORE_DIR)/binary.h \
 
 ARD_LIB_DIR = libraries
 
-ARD_LIB_CXX_SRCS = $(ARD_LIB_DIR)/EEPROM/EEPROM.cpp \
-		   $(ARD_LIB_DIR)/Wire/Wire.cpp
+ARD_LIB_CXX_SRCS = $(ARD_LIB_DIR)/Wire/Wire.cpp
 ARD_LIB_CC_SRCS = $(ARD_LIB_DIR)/Wire/utility/twi.c
 
 ARD_LIB_CXX_OBJ = $(ARD_LIB_CXX_SRCS:.cpp=.o)
@@ -73,14 +68,14 @@ SIZE = avr-size
 NM = avr-nm
 AVRDUDE = avrdude
 
-ARD_LIB_INC = -I$(ARD_LIB_DIR) -I$(ARD_LIB_DIR)/EEPROM -I$(ARD_LIB_DIR)/Wire -I$(ARD_LIB_DIR)/HMC58X3 -I$(ARD_LIB_DIR)/Wire/utility
+ARD_LIB_INC = -I$(ARD_LIB_DIR) -I$(ARD_LIB_DIR)/Wire -I$(ARD_LIB_DIR)/Wire/utility
 
 #FLAGS_WARN = -Wall -Wstrict-prototypes
 #FLAGS_TUNING = -ffunction-sections -fdata-sections -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 FLAGS_OPT = -Os
 
-ALL_INC = -I. $(ARD_LIB_INC) -I$(CORE_DIR)
-OBJS = $(CXX_OBJ) $(CORE_CXX_OBJ) $(CORE_CC_OBJ) $(ARD_LIB_CC_OBJ) $(ARD_LIB_CXX_OBJ)
+ALL_INC = -I. $(ARD_LIB_INC)
+OBJS = $(CXX_OBJ) $(ARD_LIB_CC_OBJ) $(ARD_LIB_CXX_OBJ) 
 ALL_OBJS := $(addprefix build/, $(notdir $(OBJS)))
 ALL_CFLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU) $(ALL_INC) $(FLAGS_WARN) $(FLAGS_TUNNIG) $(FLAGS_OPT)
 ALL_CXXFLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU) $(ALL_INC) $(FLAGS_TUNNIG) $(FLAGS_OPT) #-Wall
