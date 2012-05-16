@@ -9,7 +9,8 @@ F_CPU = 8000000L
 CXX_SRCS = ADXL345.cpp \
 	   AHRS.cpp \
 	   HMC5843.cpp \
-	   ITG3200.cpp
+	   ITG3200.cpp \
+	   USART.cpp
 
 CXX_OBJ = $(CXX_SRCS:.cpp=.o)
 
@@ -17,7 +18,8 @@ CXX_HDRS = ADXL345.h \
 	   AHRS.h \
 	   declarations.h \
 	   HMC5843.h \
-	   ITG3200.h
+	   ITG3200.h \
+	   USART.h
 
 CORE_DIR = libarduinocore
 
