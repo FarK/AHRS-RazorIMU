@@ -1,6 +1,8 @@
 #include <avr/io.h>
 #include "USART.h"
 
+using namespace USART_FRAME;
+
 USART::USART(int baud){
 	//Calcule baudrate register value
 	long br = ((F_CPU + baud * 8L) / (baud * 16L) - 1);
@@ -10,6 +12,8 @@ USART::USART(int baud){
 
 	//Enable receiver and transmitter
 	UCSR0B |= _BV(RXEN0) | _BV(TXEN0);
+	//Enable rx interrup too
+	//UCSR0B |= _BV(RXEN0) | _BV(TXEN0) | _BV(RXCIE0);
 
 	//Set frame format to 8 data bits, no parity, 1 stop bit
 	UCSR0C |= _BV(UCSZ01) | _BV(UCSZ00);
@@ -25,9 +29,30 @@ void USART::send(uint8_t byte){
 	UDR0 = byte;
 }
 
+void USART::send(uint8_t* buffer, uint8_t size){
+	while(size--)
+		send(*(buffer++));
+}
+
+void USART::sendFrame(uint8_t* buffer, uint8_t size){
+	if(size){
+		send(STX);
+		while(size--){
+			if(*buffer == DLE || *buffer == STX) send(DLE);
+			send(*buffer++);
+		}
+	}
+}
+
 uint8_t USART::receive(){
 	// Wait for byte to be received
 	while(!(UCSR0A & (1<<RXC0)));
 	// Return received data
 	return UDR0;
 }
+
+/* Rx interrupt subrutine
+IST(UART0_RX_vect){
+	//CODE HERE
+}
+*/
