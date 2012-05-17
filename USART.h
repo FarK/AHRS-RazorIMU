@@ -2,6 +2,8 @@
 #define USART_H
 
 #define BAUD 9600
+#define MYUBRR F_CPU/16/BAUD-1
+
 //#define USART_BAUDRATE 9600
 //#define UBRR_VALUE (((F_CPU / (USART_BAUDRATE * 16UL))) - 1)
 
@@ -15,7 +17,7 @@
 
 class USART{
 	public:
-		USART(uint8_t baud);
+		USART(int baud);
 		void send(uint8_t);
 		uint8_t receive();
 };
