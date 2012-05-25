@@ -1,8 +1,7 @@
 #ifndef USART_H
 #define USART_H
 
-//#define USART_BAUDRATE 9600
-//#define UBRR_VALUE (((F_CPU / (USART_BAUDRATE * 16UL))) - 1)
+#define FRAME_MAX_LENGTH 50
 
 /*
  * SS	PB2
@@ -15,7 +14,23 @@
 namespace USART_FRAME{
 	const uint8_t STX = 0x63;
 	const uint8_t DLE = 0x64;
+
+	//Recieving state machine constant
+	typedef enum {
+		WAIT_STX,
+		RECIEVING_LENGTH,
+		RECIEVING_DATA,
+		DISCARD_DLE_L,
+		DISCARD_DLE_D
+	} State; 
+	
+	//Variable for recieving state machine
+	extern State state;
+	extern uint8_t frameLength;
+	extern uint8_t receivedData[FRAME_MAX_LENGTH];
+	extern uint8_t dataIndx;
 };
+
 
 class USART{
 	public:
