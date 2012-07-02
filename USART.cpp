@@ -60,16 +60,16 @@ uint8_t USART::receive(){
 
 //State machine for receive data interrupt
 ISR(USART_RX_vect){
-	PORTB ^= _BV(PB5);
+	uint8_t newByte = UDR0;
 
 	switch(state){
 		case WAIT_STX:
-			if(UDR0 == STX)
+			if(newByte == STX)
 				state = RECIEVING_LENGTH;	
 		break;
 
 		case RECIEVING_LENGTH:
-			switch(UDR0){
+			switch(newByte){
 				case STX:
 					state = WAIT_STX;
 				break;
@@ -79,13 +79,13 @@ ISR(USART_RX_vect){
 				break;
 
 				default:
-					frameLength = UDR0;
+					frameLength = newByte;
 					state = RECIEVING_DATA;
 			}
 		break;
 
 		case RECIEVING_DATA:
-			switch(UDR0){
+			switch(newByte){
 				case STX:
 					state = WAIT_STX;
 				break;
@@ -95,7 +95,7 @@ ISR(USART_RX_vect){
 				break;
 
 				default:
-					receivedData[dataIndx++] = UDR0;
+					receivedData[dataIndx++] = newByte;
 					if(dataIndx >= frameLength){
 						state = WAIT_STX;
 						dataIndx = 0;
@@ -104,12 +104,12 @@ ISR(USART_RX_vect){
 		break;
 
 		case DISCARD_DLE_L:
-			frameLength = UDR0;
+			frameLength = newByte;
 			state = RECIEVING_DATA;
 		break;
 
 		case DISCARD_DLE_D:
-			receivedData[dataIndx++] = UDR0;
+			receivedData[dataIndx++] = newByte;
 
 			if(dataIndx >= frameLength){
 				state = WAIT_STX;
