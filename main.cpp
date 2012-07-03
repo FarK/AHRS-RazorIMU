@@ -1,14 +1,15 @@
 #include <util/delay.h>
+#include <avr/interrupt.h>
 #include "declarations.h"
 #include <Wire.h>
 #include <math.h>
 
-#include "timing.h"
+#include "timer8b.h"
 #include "ADXL345.h"
 #include "HMC5843.h"
 #include "ITG3200.h"
-#include "output.h"
 #include "AHRS.h"
+#include "USART.h"
 
 extern "C" void __cxa_pure_virtual(void) {
 	while(1);
@@ -24,25 +25,17 @@ unsigned int  Print_counter=0;
 //DCM variables
 float G_Dt=0.03;    // Integration time. We will run the integration loop at 50Hz if possible
 
-void setup()
-{ 
-  //pinMode (STATUS_LED,OUTPUT);  // Status LED
-  //pinMode (debugPin,OUTPUT);  // debug LED
-
-  Wire.begin();    //Init the I2C
-  _delay_ms(20);
-
-  //init some counters
-  Print_counter=0; 
-}
-
 int main()
 {
-	setup();
+	sei();
 
+	Wire.begin();    //Init the I2C
+	_delay_ms(20);
+	USART usart(9600);
 	Gyroscope gyr;
 	Accelerometer acc;
 	Magnetometer mgt;
+	Timer8b timer;
 
 	while(1){
 		//if((DIYmillis()-timer)>=5)  // Main loop runs at 50Hz
@@ -83,7 +76,9 @@ int main()
 				eAngles.yaw = atan(2*(q0*q3 + q1*q2)/(1-2*(q2*q2 + q3*q3)));
 
 				//printdata(&sen_data, &eAngles); 
+				//usart.send(timer.getDeltaTime());
 			}
+				usart.send(TCNT0);
 			//StatusLEDToggle();
 			//digitalWrite(debugPin,LOW);
 		//}

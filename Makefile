@@ -10,7 +10,8 @@ CXX_SRCS = ADXL345.cpp \
 	   AHRS.cpp \
 	   HMC5843.cpp \
 	   ITG3200.cpp \
-	   USART.cpp
+	   USART.cpp \
+	   timer8b.cpp
 
 CXX_OBJ = $(CXX_SRCS:.cpp=.o)
 
@@ -19,7 +20,8 @@ CXX_HDRS = ADXL345.h \
 	   declarations.h \
 	   HMC5843.h \
 	   ITG3200.h \
-	   USART.h
+	   USART.h \
+	   timer8b.cpp
 
 CORE_DIR = libarduinocore
 
