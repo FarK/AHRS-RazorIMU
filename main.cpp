@@ -37,7 +37,14 @@ int main()
 	Magnetometer mgt;
 	Timer8b timer;
 
+	register uint8_t timeStamp = 0;
+	register uint8_t gyrOldTime = 0;
+	register uint8_t gyrDTime = 0;
+	int i;
+
 	while(1){
+		timer.start(Timer8b_Const::CLK_8);
+
 		//if((DIYmillis()-timer)>=5)  // Main loop runs at 50Hz
 		//{
 			//timer_old = timer;
@@ -50,8 +57,15 @@ int main()
 
 			//=================================================================================//
 			//=======================  Data adquisition of all sensors ========================//
-			if(gyr.dataReady())
+			if(gyr.dataReady()){
 				gyr.getData(&sen_data);
+				usart.send(TCNT0);
+				timer.reset();
+				++i;
+				//timeStamp = TCNT0;
+				//gyrDTime = timeStamp - gyrOldTime;
+				//gyrOldTime = timeStamp;
+			}
 
 			if(acc.dataReady())
 				acc.getData(&sen_data);
@@ -76,9 +90,8 @@ int main()
 				eAngles.yaw = atan(2*(q0*q3 + q1*q2)/(1-2*(q2*q2 + q3*q3)));
 
 				//printdata(&sen_data, &eAngles); 
-				//usart.send(timer.getDeltaTime());
+				usart.send(gyrDTime);
 			}
-				usart.send(TCNT0);
 			//StatusLEDToggle();
 			//digitalWrite(debugPin,LOW);
 		//}
