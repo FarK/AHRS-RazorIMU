@@ -27,6 +27,10 @@ float G_Dt=0.03;    // Integration time. We will run the integration loop at 50H
 
 int main()
 {
+	//Configure LED pin
+	DDRB |= _BV(PB5);
+	PORTB |= _BV(PB5);
+
 	sei();
 
 	Wire.begin();    //Init the I2C
@@ -36,64 +40,53 @@ int main()
 	Accelerometer acc;
 	Magnetometer mgt;
 	Timer8b timer;
+	timer.start(Timer8b_Const::CLK_64);
 
-	register uint8_t timeStamp = 0;
-	register uint8_t gyrOldTime = 0;
-	register uint8_t gyrDTime = 0;
-	int i;
+	uint8_t timeStamp = 0;
+	uint8_t gyrOldTime = 0;
+	uint8_t gyrDTime = 0;
 
 	while(1){
-		timer.start(Timer8b_Const::CLK_8);
+		   Print_counter++;
 
-		//if((DIYmillis()-timer)>=5)  // Main loop runs at 50Hz
-		//{
-			//timer_old = timer;
-			//timer=DIYmillis();
-			//G_Dt = (timer-timer_old)/1000.0;    // Real time of loop run. We use this on the DCM algorithm (gyro integration time)
-			//if(G_Dt > 1)
-			//	G_Dt = 0;  //keeps dt from blowing up, goes to zero to keep gyros from departing
+		   //=================================================================================//
+		   //=======================  Data adquisition of all sensors ========================//
+		   if(gyr.dataReady()){
+			gyr.getData(&sen_data);
+			cli();
+			timeStamp = TCNT0;
+			gyrDTime = timeStamp - gyrOldTime;
+			gyrOldTime = timeStamp;
+			sei();
+		   }
 
-			Print_counter++;
+		   if(acc.dataReady())
+			acc.getData(&sen_data);
 
-			//=================================================================================//
-			//=======================  Data adquisition of all sensors ========================//
-			if(gyr.dataReady()){
-				gyr.getData(&sen_data);
-				usart.send(TCNT0);
-				timer.reset();
-				++i;
-				//timeStamp = TCNT0;
-				//gyrDTime = timeStamp - gyrOldTime;
-				//gyrOldTime = timeStamp;
-			}
+		   if(mgt.dataReady())
+			mgt.getData(&sen_data);
 
-			if(acc.dataReady())
-				acc.getData(&sen_data);
+		   //=================================================================================//
+		   AHRSupdate(&sen_data, G_Dt/2.0);
 
-			if(mgt.dataReady())
-				mgt.getData(&sen_data);
+		   //=================================================================================//
+		   //============================= Data Display/User Code ============================//
+		   // Make sure you don't take too long here!
 
-			//=================================================================================//
-			AHRSupdate(&sen_data, G_Dt/2.0);
+		   if (Print_counter > 4)
+		   {
+			Print_counter=0;
 
-			//=================================================================================//
-			//============================= Data Display/User Code ============================//
-			// Make sure you don't take too long here!
+			eAngles.roll = atan(2*(q0*q1 + q2*q3)/(1-2*(q1*q1 + q2*q2)));
+			eAngles.roll = q0 + q1 + q2 + q3;
+			eAngles.pitch = asin(2*(q0*q2 - q1*q3));
+			eAngles.yaw = atan(2*(q0*q3 + q1*q2)/(1-2*(q2*q2 + q3*q3)));
 
-			if (Print_counter > 4)
-			{
-				Print_counter=0;
-
-				//eAngles.roll = atan(2*(q0*q1 + q2*q3)/(1-2*(q1*q1 + q2*q2)));
-				eAngles.roll = q0 + q1 + q2 + q3;
-				eAngles.pitch = asin(2*(q0*q2 - q1*q3));
-				eAngles.yaw = atan(2*(q0*q3 + q1*q2)/(1-2*(q2*q2 + q3*q3)));
-
-				//printdata(&sen_data, &eAngles); 
-				usart.send(gyrDTime);
-			}
-			//StatusLEDToggle();
-			//digitalWrite(debugPin,LOW);
-		//}
+			//printdata(&sen_data, &eAngles); 
+			usart.send(gyrDTime);
+		   }
+		   
+		   //StatusLEDToggle
+		   //PORTB ^= _BV(PB5);
 	}
 }
