@@ -21,7 +21,7 @@ class Accelerometer{
 	public:
 		Accelerometer();
 
-		void getData(s_sensor_data* sen_data);
+		void getData(SensorData* sen_data);
 		bool dataReady();
 };
 

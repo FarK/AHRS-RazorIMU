@@ -35,7 +35,7 @@ class Magnetometer{
 		Magnetometer();
 
 		//Sets the raw and scaled data in the struct passed
-		void getData(s_sensor_data* sen_data);
+		void getData(SensorData* sen_data);
 		//True if the new measurement are ready to be read
 		bool dataReady();
 	

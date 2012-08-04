@@ -31,7 +31,7 @@ Accelerometer::Accelerometer(){
 	Wire.endTransmission();
 }
 
-void Accelerometer::getData(s_sensor_data* sen_data){
+void Accelerometer::getData(SensorData* sen_data){
 	Wire.beginTransmission(ADDRESS); 
 	Wire.send(ACCEL_DATA);
 	Wire.endTransmission();

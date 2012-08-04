@@ -1,56 +1,17 @@
-//=====================================================================================================
-// AHRS.c
-// S.O.H. Madgwick
-// 25th August 2010
-//=====================================================================================================
-// Description:
-//
-// Quaternion implementation of the 'DCM filter' [Mayhony et al].  Incorporates the magnetic distortion
-// compensation algorithms from my filter [Madgwick] which eliminates the need for a reference
-// direction of flux (bx bz) to be predefined and limits the effect of magnetic distortions to yaw
-// axis only.
-//
-// User must define 'halfT' as the (sample period / 2), and the filter gains 'Kp' and 'Ki'.
-//
-// Global variables 'q0', 'q1', 'q2', 'q3' are the quaternion elements representing the estimated
-// orientation.  See my report for an overview of the use of quaternions in this application.
-//
-// User must call 'AHRSupdate()' every sample period and parse calibrated gyroscope ('gx', 'gy', 'gz'),
-// accelerometer ('ax', 'ay', 'ay') and magnetometer ('mx', 'my', 'mz') data.  Gyroscope units are
-// radians/second, accelerometer and magnetometer units are irrelevant as the vector is normalised.
-//
-//=====================================================================================================
-
-//----------------------------------------------------------------------------------------------------
-// Header files
-
 #include "AHRS.h"
 #include "declarations.h"
 #include <math.h>
-
-//----------------------------------------------------------------------------------------------------
-// Definitions
 
 #define Kp 2.0f			// proportional gain governs rate of convergence to accelerometer/magnetometer
 #define Ki 0.005f		// integral gain governs rate of convergence of gyroscope biases
 //#define halfT 0.01f		// half the sample period
 
-//---------------------------------------------------------------------------------------------------
-// Variable definitions
-
 float q0 = 1, q1 = 0, q2 = 0, q3 = 0;	// quaternion elements representing the estimated orientation
-float q4;
 float exInt = 0, eyInt = 0, ezInt = 0;	// scaled integral error
 
-//====================================================================================================
-// Function
-//====================================================================================================
+float invSqrt(float number);	//Optimize inverse square root function
 
-float invSqrt(float number);
-
-//TODO: Gyro en rad/s
-
-void AHRSupdate(s_sensor_data* sd, float halfT) {
+void AHRSupdate(SensorData* sd, float halfT) {
 	float inorm;
 	float ax, ay, az, gx, gy, gz, mx, my, mz;
 	float hx, hy, hz, bx, bz;
@@ -116,7 +77,6 @@ void AHRSupdate(s_sensor_data* sd, float halfT) {
 	exInt = exInt + ex*Ki;
 	eyInt = eyInt + ey*Ki;
 	ezInt = ezInt + ez*Ki;
-	q4= exInt;
 	
 	// adjusted gyroscope measurements
 	gx = sd->gx + Kp*ex + exInt;

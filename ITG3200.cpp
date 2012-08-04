@@ -45,7 +45,7 @@ Gyroscope::Gyroscope(){
 	*/
 }
 
-void Gyroscope::getData(s_sensor_data* sen_data){
+void Gyroscope::getData(SensorData* sen_data){
 	Wire.beginTransmission(ADDRESS); 
 	Wire.send(DATA);	//The temperature and gyro data start
 	Wire.endTransmission();

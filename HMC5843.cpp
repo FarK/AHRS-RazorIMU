@@ -29,7 +29,7 @@ Magnetometer::Magnetometer() :
 
 }
 
-void Magnetometer::getData(s_sensor_data* sen_data){
+void Magnetometer::getData(SensorData* sen_data){
 	//The pointer to the registers of device always point to REG_XH
 	//at this point, so do not need move it. We read the 6 bytes directly
 	Wire.requestFrom(ADDRESS, 6);
