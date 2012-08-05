@@ -68,11 +68,6 @@ void TwoWire::begin(uint8_t address)
   begin();
 }
 
-void TwoWire::begin(int address)
-{
-  begin((uint8_t)address);
-}
-
 uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity)
 {
   // clamp to buffer length
@@ -88,11 +83,6 @@ uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity)
   return read;
 }
 
-uint8_t TwoWire::requestFrom(int address, int quantity)
-{
-  return requestFrom((uint8_t)address, (uint8_t)quantity);
-}
-
 void TwoWire::beginTransmission(uint8_t address)
 {
   // indicate that we are transmitting
@@ -102,11 +92,6 @@ void TwoWire::beginTransmission(uint8_t address)
   // reset tx buffer iterator vars
   txBufferIndex = 0;
   txBufferLength = 0;
-}
-
-void TwoWire::beginTransmission(int address)
-{
-  beginTransmission((uint8_t)address);
 }
 
 uint8_t TwoWire::endTransmission(void)
@@ -159,22 +144,6 @@ void TwoWire::send(uint8_t* data, uint8_t quantity)
     // reply to master
     twi_transmit(data, quantity);
   }
-}
-
-// must be called in:
-// slave tx event callback
-// or after beginTransmission(address)
-void TwoWire::send(char* data)
-{
-  send((uint8_t*)data, strlen(data));
-}
-
-// must be called in:
-// slave tx event callback
-// or after beginTransmission(address)
-void TwoWire::send(int data)
-{
-  send((uint8_t)data);
 }
 
 // must be called in:
