@@ -1,7 +1,7 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include "declarations.h"
-#include <Wire.h>
+#include "Wire.h"
 #include <math.h>
 
 #include "timer8b.h"

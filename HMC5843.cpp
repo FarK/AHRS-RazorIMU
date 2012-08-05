@@ -1,5 +1,5 @@
 #include "HMC5843.h"
-#include <Wire.h>
+#include "Wire.h"
 
 using namespace MGT_Registers;
 

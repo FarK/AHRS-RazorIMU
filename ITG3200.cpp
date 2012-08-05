@@ -1,5 +1,5 @@
 #include "ITG3200.h"
-#include <Wire.h>
+#include "Wire.h"
 #include "declarations.h"
 
 using namespace GYR_Registers;
