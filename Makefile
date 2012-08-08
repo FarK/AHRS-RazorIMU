@@ -39,6 +39,7 @@ FLAGS_OPT = -Os
 ALL_OBJ = $(addprefix build/, $(notdir $(CC_OBJ))) $(addprefix build/, $(notdir $(CXX_OBJ)))
 CC_FLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU) $(FLAGS_WARN) $(FLAGS_TUNNIG) $(FLAGS_OPT)
 CXX_FLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU) $(FLAGS_WARN) $(FLAGS_TUNNIG) $(FLAGS_OPT)
+END_FLAGS = -lm -lc -lm
 
 #Buscamos los objetos en build
 VPATH = build
@@ -49,8 +50,8 @@ all : $(TARGET).hex
 $(TARGET).hex : $(TARGET).out
 	$(OBJCOPY) -O ihex -R .eeprom $(TARGET).out $(TARGET).hex
 
-$(TARGET).out : $(CC_OBJ) $(CXX_OBJ) $(CXX_HDRS)
-	$(CXX) $(CXX_FLAGS) main.cpp $(ALL_OBJ) -o $(TARGET).out
+$(TARGET).out : $(CC_OBJ) $(CXX_OBJ) $(CXX_HDRS) main.cpp
+	$(CXX) $(CXX_FLAGS) main.cpp $(ALL_OBJ) -o $(TARGET).out $(END_FLAGS)
 
 upload : $(TARGET).hex
 	$(AVRDUDE) -c$(PROGRAMMER) -p$(MCU) -b$(BAUD_P) -P$(PORT) -U flash:w:$(TARGET).hex
