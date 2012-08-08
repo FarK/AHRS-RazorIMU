@@ -30,6 +30,8 @@ CXX_HDRS = Wire.h \
 CXX_SRCS = $(CXX_HDRS:.h=.cpp)
 CXX_OBJ = $(CXX_HDRS:.h=.o)
 
+AUX_HDRS = declarations.h
+
 #Flags de compilación
 FLAGS_WARN = -Wall
 #FLAGS_TUNING = -ffunction-sections -fdata-sections -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
@@ -50,7 +52,7 @@ all : $(TARGET).hex
 $(TARGET).hex : $(TARGET).out
 	$(OBJCOPY) -O ihex -R .eeprom $(TARGET).out $(TARGET).hex
 
-$(TARGET).out : $(CC_OBJ) $(CXX_OBJ) $(CXX_HDRS) main.cpp
+$(TARGET).out : $(CC_OBJ) $(CXX_OBJ) $(CC_HDRS) $(CXX_HDRS) $(AUX_HDRS) main.cpp
 	$(CXX) $(CXX_FLAGS) main.cpp $(ALL_OBJ) -o $(TARGET).out $(END_FLAGS)
 
 upload : $(TARGET).hex
