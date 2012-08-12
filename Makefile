@@ -47,13 +47,16 @@ END_FLAGS = -lm -lc -lm
 VPATH = build
 .PHONY: upload serialmon clean clear
 
-all : $(TARGET).hex
+all : build $(TARGET).hex
 
 $(TARGET).hex : $(TARGET).out
 	$(OBJCOPY) -O ihex -R .eeprom $(TARGET).out $(TARGET).hex
 
 $(TARGET).out : $(CC_OBJ) $(CXX_OBJ) $(CC_HDRS) $(CXX_HDRS) $(AUX_HDRS) main.cpp
 	$(CXX) $(CXX_FLAGS) main.cpp $(ALL_OBJ) -o $(TARGET).out $(END_FLAGS)
+
+build:
+	mkdir build
 
 upload : $(TARGET).hex
 	$(AVRDUDE) -c$(PROGRAMMER) -p$(MCU) -b$(BAUD_P) -P$(PORT) -U flash:w:$(TARGET).hex
