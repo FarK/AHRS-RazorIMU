@@ -14,9 +14,11 @@ Quaternion::Quaternion(float q0, float q1, float q2, float q3){
 	this->q3=q3;
 }
 
-//Quaternion Quaternion::conj(){
-//	return Quaternion(q0, -q1, -q2, -q3);
-//}
+void Quaternion::conjugate(){
+	q1 = -q1;
+	q2 = -q2;
+	q3 = -q3;
+}
 
 Quaternion Quaternion::operator+(const Quaternion &q){
 	return Quaternion(q0+q.q0, q1+q.q1, q2+q.q2, q3+q.q3);

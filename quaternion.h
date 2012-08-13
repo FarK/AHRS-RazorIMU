@@ -7,7 +7,8 @@ class Quaternion{
 		Quaternion();
 		Quaternion(float q0, float q1, float q2, float q3);
 
-		//Quaternion conj();
+		//Conjuge this quaternion
+		void conjugate();
 	
 		//Sum term by term
 		Quaternion operator+(const Quaternion &q);
