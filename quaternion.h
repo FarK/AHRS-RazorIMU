@@ -9,6 +9,8 @@ class Quaternion{
 
 		//Conjuge this quaternion
 		void conjugate();
+		//Normalize this cuaternion
+		void normalize();
 	
 		//Sum term by term
 		Quaternion operator+(const Quaternion &q);
@@ -22,6 +24,11 @@ class Quaternion{
 
 		//ATRIBUTES
 		float q0,q1,q2,q3;
+
+	private:
+		//Optimize inverse square root function
+		float invSqrt(float number);
+
 };
 
 #endif
