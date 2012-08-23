@@ -26,6 +26,7 @@ CXX_HDRS = Wire.h \
 	   ITG3200.h \
 	   USART.h \
 	   quaternion.h \
+	   vector.h \
 	   timer8b.h
 
 CXX_SRCS = $(CXX_HDRS:.h=.cpp)
