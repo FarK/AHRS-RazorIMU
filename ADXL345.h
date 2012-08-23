@@ -1,6 +1,7 @@
 #ifndef ADXL345_H
 #define ADXL345_H
-#include "declarations.h"
+#include <stdint.h>
+#include "vector.h"
 
 namespace ACC_Registers{
 	//I2C addresses 
@@ -20,8 +21,12 @@ namespace ACC_Registers{
 class Accelerometer{
 	public:
 		Accelerometer();
+		bool refreshData(Vector<int> &vector);
 
-		void getData(SensorData* sen_data);
+		uint8_t deltaT;
+		uint8_t deltaT_old;
+
+	private:
 		bool dataReady();
 };
 

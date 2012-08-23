@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include "declarations.h"
@@ -10,6 +11,7 @@
 #include "ITG3200.h"
 #include "AHRS.h"
 #include "USART.h"
+#include "vector.h"
 
 extern "C" void __cxa_pure_virtual(void) {
 	while(1);
@@ -22,14 +24,14 @@ Frame frame;
 
 int main()
 {
+	//Vectores de los sensores
+	Vector<int> vectAcce(0,0,0);
+	Vector<int> vectMagn(0,0,0);
+	Vector<float> vectGyro(0,0,0);
+	float temperature = 0;
+	
 	//Variables for calculate delta time
 	uint8_t timeStamp = 0;
-	uint8_t aDt_old = 0;
-	uint8_t aDt= 0;
-	uint8_t gDt_old = 0;
-	uint8_t gDt= 0;
-	uint8_t mDt_old = 0;
-	uint8_t mDt= 0;
 	uint8_t ahrsDt_old= 0;
 	uint8_t ahrsDt= 0;
 
@@ -55,35 +57,10 @@ int main()
 	timer.start(Timer8b_Const::CLK_64);	//timer start
 
 	while(1){
-		if(gyr.dataReady()){
-			gyr.getData(&sen_data);
-			cli();
-			timeStamp = TCNT0;
-			gDt = timeStamp - gDt_old;
-			gDt_old = timeStamp;
-			sei();
-			aRdy = true;
-		}
 
-		if(acc.dataReady()){
-			acc.getData(&sen_data);
-			cli();
-			timeStamp = TCNT0;
-			aDt = timeStamp - aDt_old;
-			aDt_old = timeStamp;
-			sei();
-			gRdy = true;
-		}
-
-		if(mgt.dataReady()){
-			mgt.getData(&sen_data);
-			cli();
-			timeStamp = TCNT0;
-			mDt = timeStamp - mDt_old;
-			mDt_old = timeStamp;
-			sei();
-			mRdy = true;
-		}
+		gRdy = gyr.refreshData(vectGyro, temperature);
+		aRdy = acc.refreshData(vectAcce);
+		mRdy = mgt.refreshData(vectMagn);
 
 		if(aRdy && gRdy && mRdy){
 			cli();
@@ -103,6 +80,18 @@ int main()
 			frame.roll = q0 + q1 + q2 + q3;
 			frame.pitch = asin(2*(q0*q2 - q1*q3));
 			frame.yaw = atan(2*(q0*q3 + q1*q2)/(1-2*(q2*q2 + q3*q3)));
+
+			frame.ax = (float) vectAcce.x;
+			frame.ay = (float) vectAcce.y;
+			frame.az = (float) vectAcce.z;
+
+			frame.mx = vectMagn.x;
+			frame.my = vectMagn.y;
+			frame.mz = vectMagn.z;
+
+			frame.gx = vectGyro.x;
+			frame.gy = vectGyro.y;
+			frame.gz = vectGyro.z;
 
 			frame.time++;
 

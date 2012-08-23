@@ -1,8 +1,8 @@
 #include "ADXL345.h"
-#include "Wire.h"
 #include <stdint.h>
-#include <util/delay.h>
-#include "declarations.h"
+#include <avr/interrupt.h>
+#include "Wire.h"
+#include "vector.h"
 
 //Registers values
 #define POWER_CTL_VAL	0X08	//Measure on
@@ -10,7 +10,7 @@
 
 using namespace ACC_Registers;
 
-Accelerometer::Accelerometer(){
+Accelerometer::Accelerometer() : deltaT(0), deltaT_old(0){
 	//Configuring the registers of dispositive
 	Wire.beginTransmission(ADDRESS);
 	Wire.send(BW_RATE);
@@ -31,24 +31,31 @@ Accelerometer::Accelerometer(){
 	Wire.endTransmission();
 }
 
-void Accelerometer::getData(SensorData* sen_data){
-	Wire.beginTransmission(ADDRESS); 
-	Wire.send(ACCEL_DATA);
-	Wire.endTransmission();
+bool Accelerometer::refreshData(Vector<int> &vector){
+	if(dataReady()){
+		Wire.beginTransmission(ADDRESS); 
+		Wire.send(ACCEL_DATA);
+		Wire.endTransmission();
 
-	Wire.requestFrom(ADDRESS, 6);    // request 6 bytes from device
+		Wire.requestFrom(ADDRESS, 6);    // request 6 bytes from device
 
-	while(Wire.available() < 6);	//We wait 6 bytes
+		while(Wire.available() < 6);	//We wait 6 bytes
 
-	//get the raw data
-	sen_data->axr = Wire.receive() | (Wire.receive() << 8);
-	sen_data->ayr = Wire.receive() | (Wire.receive() << 8);
-	sen_data->azr = Wire.receive() | (Wire.receive() << 8);
+		//get the raw data
+		vector.x = Wire.receive() | (Wire.receive() << 8);
+		vector.y = Wire.receive() | (Wire.receive() << 8);
+		vector.z = Wire.receive() | (Wire.receive() << 8);
 
-	//convert to float
-	sen_data->ax = (float) sen_data->axr;
-	sen_data->ay = (float) sen_data->ayr;
-	sen_data->az = (float) sen_data->azr;
+		//Actulize deltaT
+		cli();
+		uint8_t timeStamp = TCNT0;
+		deltaT = timeStamp - deltaT_old;
+		deltaT_old = timeStamp;
+		sei();
+		
+		return true;
+	}
+	else return false;
 }
 
 bool Accelerometer::dataReady(){

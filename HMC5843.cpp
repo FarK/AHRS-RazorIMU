@@ -1,9 +1,12 @@
 #include "HMC5843.h"
 #include "Wire.h"
+#include <stdint.h>
+#include <avr/interrupt.h>
 
 using namespace MGT_Registers;
 
 Magnetometer::Magnetometer() : 
+	deltaT(0), deltaT_old(0),
 	xScale(1), yScale(1), zScale(1)
 {
 	calibrate();
@@ -29,26 +32,38 @@ Magnetometer::Magnetometer() :
 
 }
 
-void Magnetometer::getData(SensorData* sen_data){
-	//The pointer to the registers of device always point to REG_XH
-	//at this point, so do not need move it. We read the 6 bytes directly
-	Wire.requestFrom(ADDRESS, 6);
-	while(Wire.available() < 6);	//Wait 6 bytes
-	//Read out the 3 values, 2 bytes each.
-	sen_data->mxr = (Wire.receive() << 8) | Wire.receive();
-	sen_data->myr = (Wire.receive() << 8) | Wire.receive();
-	sen_data->mzr = (Wire.receive() << 8) | Wire.receive();
+bool Magnetometer::refreshData(Vector<int> &vector){
+	if(dataReady()){
+		//The pointer to the registers of device always point to REG_XH
+		//at this point, so do not need move it. We read the 6 bytes directly
+		Wire.requestFrom(ADDRESS, 6);
+		while(Wire.available() < 6);	//Wait 6 bytes
+		//Read out the 3 values, 2 bytes each.
+		int mxr = (Wire.receive() << 8) | Wire.receive();
+		int myr = (Wire.receive() << 8) | Wire.receive();
+		int mzr = (Wire.receive() << 8) | Wire.receive();
 
-	//Set scaled values
-	sen_data->mx = (float) sen_data->mxr / xScale;
-	sen_data->my = (float) sen_data->myr / yScale;
-	sen_data->mz = (float) sen_data->mzr / zScale;
+		//Set scaled values
+		vector.x = mxr / xScale;
+		vector.y = myr / yScale;
+		vector.z = mzr / zScale;
 
-	//Request a new conversion
-	Wire.beginTransmission(ADDRESS);
-	Wire.send(REG_MODE);
-	Wire.send(0x01);	//Single conversion mode
-	Wire.endTransmission();
+		//Request a new conversion
+		Wire.beginTransmission(ADDRESS);
+		Wire.send(REG_MODE);
+		Wire.send(0x01);	//Single conversion mode
+		Wire.endTransmission();
+
+		//Actulize deltaT
+		cli();
+		uint8_t timeStamp = TCNT0;
+		deltaT = timeStamp - deltaT_old;
+		deltaT_old = timeStamp;
+		sei();
+
+		return true;
+	}
+	else return false;
 }
 
 bool Magnetometer::dataReady(){

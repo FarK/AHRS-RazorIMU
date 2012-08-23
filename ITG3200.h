@@ -1,6 +1,8 @@
 #ifndef ITG3200_H
 #define ITG3200_H
+#include <stdint.h>
 #include "declarations.h"
+#include "vector.h"
 
 namespace GYR_Registers{
 	const uint8_t ADDRESS =		0x68;
@@ -21,7 +23,12 @@ class Gyroscope{
 	public:
 		Gyroscope();
 
-		void getData(SensorData* sen_data);
+		bool refreshData(Vector<float> &vector, float &temperature);
+
+		uint8_t deltaT;
+		uint8_t deltaT_old;
+
+	private:
 		bool dataReady();
 };
 

@@ -1,7 +1,8 @@
 #ifndef HMC5843_H
 #define HMC5843_H
 
-#include "declarations.h"
+#include <stdint.h>
+#include"vector.h"
 
 //Constants
 namespace MGT_Registers {
@@ -34,12 +35,16 @@ class Magnetometer{
 		//Configures the device
 		Magnetometer();
 
-		//Sets the raw and scaled data in the struct passed
-		void getData(SensorData* sen_data);
-		//True if the new measurement are ready to be read
-		bool dataReady();
+		//Sets magnetic vector
+		bool refreshData(Vector<int> &vector);
+
+		uint8_t deltaT;
+		uint8_t deltaT_old;
 	
 	private:
+		//True if the new measurement are ready to be read
+		bool dataReady();
+
 		//Calibrate the device
 		void calibrate();
 

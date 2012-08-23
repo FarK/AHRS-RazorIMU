@@ -1,10 +1,12 @@
 #include "ITG3200.h"
+#include <stdint.h>
+#include <avr/interrupt.h>
 #include "Wire.h"
-#include "declarations.h"
+#include "vector.h"
 
 using namespace GYR_Registers;
 
-Gyroscope::Gyroscope(){
+Gyroscope::Gyroscope() : deltaT(0), deltaT_old(0){
 	//Set the sample rate divider to 1
 	Wire.beginTransmission(ADDRESS);
 	Wire.send(SMPLRT_DIV);
@@ -45,29 +47,41 @@ Gyroscope::Gyroscope(){
 	*/
 }
 
-void Gyroscope::getData(SensorData* sen_data){
-	Wire.beginTransmission(ADDRESS); 
-	Wire.send(DATA);	//The temperature and gyro data start
-	Wire.endTransmission();
-	
-	Wire.requestFrom(ADDRESS, 8);    // request 8 bytes from device
-	
-	//Wait to 8 bits
-	while(Wire.available() < 8);
-	
-	//Save data
-	sen_data->tmpr = (Wire.receive() << 8) | Wire.receive();
-	sen_data->gxr = (Wire.receive() << 8) | Wire.receive();
-	sen_data->gyr = (Wire.receive() << 8) | Wire.receive();
-	sen_data->gzr = (Wire.receive() << 8) | Wire.receive();
+bool Gyroscope::refreshData(Vector<float> &vector, float &temperature){
+	if(dataReady()){
+		Wire.beginTransmission(ADDRESS); 
+		Wire.send(DATA);	//The temperature and gyro data start
+		Wire.endTransmission();
+		
+		Wire.requestFrom(ADDRESS, 8);    // request 8 bytes from device
+		
+		//Wait to 8 bits
+		while(Wire.available() < 8);
+		
+		//Save data
+		int tmpr = (Wire.receive() << 8) | Wire.receive();
+		int gxr = (Wire.receive() << 8) | Wire.receive();
+		int gyr = (Wire.receive() << 8) | Wire.receive();
+		int gzr = (Wire.receive() << 8) | Wire.receive();
 
-	//TODO: La conversión a grados centígrados está mal
-	//Convert to degrees centigrade
-	sen_data->tmp = (float) ((sen_data->tmpr + TEMP_OFFSET) / TEMP_SCALE) + 35.0f;
-	//Convert to rad/s
-	sen_data->gx = (float) sen_data->gxr / GYRO_SCALE;
-	sen_data->gy = (float) sen_data->gyr / GYRO_SCALE;
-	sen_data->gz = (float) sen_data->gzr / GYRO_SCALE;
+		//TODO: La conversión a grados centígrados está mal
+		//Convert to degrees centigrade
+		temperature = (float) ((tmpr + TEMP_OFFSET) / TEMP_SCALE) + 35.0f;
+		//Convert to rad/s
+		vector.x = gxr / GYRO_SCALE;
+		vector.y = gyr / GYRO_SCALE;
+		vector.z = gzr / GYRO_SCALE;
+
+		//Actulize deltaT
+		cli();
+		uint8_t timeStamp = TCNT0;
+		deltaT = timeStamp - deltaT_old;
+		deltaT_old = timeStamp;
+		sei();
+
+		return true;
+	}
+	else return false;
 }
 
 bool Gyroscope::dataReady(){
