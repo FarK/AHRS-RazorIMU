@@ -48,7 +48,7 @@ Quaternion Quaternion::operator*(const Quaternion &q){
 
 Quaternion Quaternion::rotateVector(float dx, float dy, float dz){
 	//Auxiliary variables to reduce number of repeated operations
-	float q0q0 = q0*q0;
+	//float q0q0 = q0*q0;
 	float q0q1 = q0*q1;
 	float q0q2 = q0*q2;
 	float q0q3 = q0*q3;
