@@ -1,4 +1,5 @@
 #include "quaternion.h"
+#include "mathUtils.h"
 
 Quaternion::Quaternion(){
 	q0 = 0;
@@ -66,20 +67,3 @@ Quaternion Quaternion::rotateVector(float dx, float dy, float dz){
 			2*dx*(q0q2 + q1q3) + 2*dy*(q2q3 - q0q1) + 2*dz*(0.5f - q1q1 + q2q2)
 			);
 } 
-
-float Quaternion::invSqrt(float number){
-	//Quake III Arena C&P
-	long i;
-	float x2, y;
-	const float threehalfs = 1.5F;
-
-	x2 = number * 0.5F;
-	y  = number;
-	i  = * ( long * ) &y;                       // evil floating point bit level hacking
-	i  = 0x5f3759df - ( i >> 1 );               // what the fuck?
-	y  = * ( float * ) &i;
-	y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
-	//y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
-
-	return y;
-}

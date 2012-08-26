@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "vector.h"
+#include "mathUtils.h"
 
 template <typename T>
 Vector<T>::Vector(){
@@ -15,13 +16,13 @@ Vector<T>::Vector(T x, T y, T z){
 	this->z = z;
 }
 
-//template <typename T>
-//void Vector<T>::normalize(){
-//	float inorm = invSqrt(x*x + y*y + z*z);
-//	x *= inorm;
-//	y *= inorm;
-//	z *= inorm;
-//}
+template <typename T>
+void Vector<T>::normalize(){
+	float inorm = invSqrt(x*x + y*y + z*z);
+	x *= inorm;
+	y *= inorm;
+	z *= inorm;
+}
 
 //Instanciación explicita
 template class Vector<int>;

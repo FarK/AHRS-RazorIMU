@@ -24,11 +24,6 @@ class Quaternion{
 
 		//ATRIBUTES
 		float q0,q1,q2,q3;
-
-	private:
-		//Optimize inverse square root function
-		float invSqrt(float number);
-
 };
 
 #endif
