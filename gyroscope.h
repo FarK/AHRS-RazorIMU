@@ -1,7 +1,7 @@
-#ifndef ITG3200_H
-#define ITG3200_H
+#ifndef GYROSCOPE_H
+#define GYROSCOPE_H
+
 #include <stdint.h>
-#include "declarations.h"
 #include "vector.h"
 
 namespace GYR_Registers{

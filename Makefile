@@ -20,10 +20,10 @@ CC_SRCS = $(CC_HDRS:.h=.c)
 CC_OBJ = $(CC_HDRS:.h=.o)
 
 CXX_HDRS = Wire.h \
-	   ADXL345.h \
 	   AHRS.h \
-	   HMC5843.h \
-	   ITG3200.h \
+	   gyroscope.h \
+	   accelerometer.h \
+	   magnetometer.h \
 	   USART.h \
 	   quaternion.h \
 	   vector.h \

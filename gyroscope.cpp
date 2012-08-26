@@ -1,4 +1,5 @@
-#include "ITG3200.h"
+#include "gyroscope.h"
+
 #include <stdint.h>
 #include <avr/interrupt.h>
 #include "Wire.h"

@@ -1,5 +1,5 @@
-#ifndef HMC5843_H
-#define HMC5843_H
+#ifndef MAGNETOMETER_H
+#define MAGNETOMETER_H
 
 #include <stdint.h>
 #include"vector.h"

@@ -1,4 +1,6 @@
-#include "ADXL345.h"
+#include "accelerometer.h"
+
+#include "Wire.h"
 #include <stdint.h>
 #include <avr/interrupt.h>
 #include "Wire.h"

@@ -1,4 +1,5 @@
-#include "HMC5843.h"
+#include "magnetometer.h"
+
 #include "Wire.h"
 #include <stdint.h>
 #include <avr/interrupt.h>

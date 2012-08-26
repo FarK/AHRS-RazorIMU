@@ -6,9 +6,9 @@
 #include <math.h>
 
 #include "timer8b.h"
-#include "ADXL345.h"
-#include "HMC5843.h"
-#include "ITG3200.h"
+#include "gyroscope.h"
+#include "accelerometer.h"
+#include "magnetometer.h"
 #include "AHRS.h"
 #include "USART.h"
 #include "vector.h"
