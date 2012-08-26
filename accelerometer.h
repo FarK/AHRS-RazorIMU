@@ -1,5 +1,5 @@
-#ifndef ADXL345_H
-#define ADXL345_H
+#ifndef ACCELEROMETER_H
+#define ACCELEROMETER_H
 #include "declarations.h"
 
 namespace ACC_Registers{

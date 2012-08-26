@@ -1,4 +1,4 @@
-#include "HMC5843.h"
+#include "magnetometer.h"
 #include "Wire.h"
 
 using namespace MGT_Registers;

@@ -1,5 +1,5 @@
-#ifndef ITG3200_H
-#define ITG3200_H
+#ifndef GYROSCOPE_H
+#define GYROSCOPE_H
 #include "declarations.h"
 
 namespace GYR_Registers{

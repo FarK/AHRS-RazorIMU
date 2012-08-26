@@ -1,4 +1,4 @@
-#include "ITG3200.h"
+#include "gyroscope.h"
 #include "Wire.h"
 #include "declarations.h"
 

@@ -1,4 +1,4 @@
-#include "ADXL345.h"
+#include "accelerometer.h"
 #include "Wire.h"
 #include <stdint.h>
 #include <util/delay.h>
