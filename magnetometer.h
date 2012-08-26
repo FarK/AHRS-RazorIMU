@@ -36,7 +36,7 @@ class Magnetometer{
 		Magnetometer();
 
 		//Sets magnetic vector
-		bool refreshData(Vector<int> &vector);
+		bool getData(Vector<int> &vector);
 
 		uint8_t deltaT;
 		uint8_t deltaT_old;

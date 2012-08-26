@@ -23,7 +23,7 @@ class Gyroscope{
 	public:
 		Gyroscope();
 
-		bool refreshData(Vector<float> &vector, float &temperature);
+		bool getData(Vector<float> &vector, float &temperature);
 
 		uint8_t deltaT;
 		uint8_t deltaT_old;

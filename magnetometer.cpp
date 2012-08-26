@@ -33,7 +33,7 @@ Magnetometer::Magnetometer() :
 
 }
 
-bool Magnetometer::refreshData(Vector<int> &vector){
+bool Magnetometer::getData(Vector<int> &vector){
 	if(dataReady()){
 		//The pointer to the registers of device always point to REG_XH
 		//at this point, so do not need move it. We read the 6 bytes directly

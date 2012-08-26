@@ -58,9 +58,9 @@ int main()
 
 	while(1){
 
-		gRdy = gyr.refreshData(vectGyro, temperature);
-		aRdy = acc.refreshData(vectAcce);
-		mRdy = mgt.refreshData(vectMagn);
+		gRdy = gyr.getData(vectGyro, temperature);
+		aRdy = acc.getData(vectAcce);
+		mRdy = mgt.getData(vectMagn);
 
 		if(aRdy && gRdy && mRdy){
 			cli();

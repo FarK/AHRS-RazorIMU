@@ -48,7 +48,7 @@ Gyroscope::Gyroscope() : deltaT(0), deltaT_old(0){
 	*/
 }
 
-bool Gyroscope::refreshData(Vector<float> &vector, float &temperature){
+bool Gyroscope::getData(Vector<float> &vector, float &temperature){
 	if(dataReady()){
 		Wire.beginTransmission(ADDRESS); 
 		Wire.send(DATA);	//The temperature and gyro data start

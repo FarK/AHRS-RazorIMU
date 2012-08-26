@@ -33,7 +33,7 @@ Accelerometer::Accelerometer() : deltaT(0), deltaT_old(0){
 	Wire.endTransmission();
 }
 
-bool Accelerometer::refreshData(Vector<int> &vector){
+bool Accelerometer::getData(Vector<int> &vector){
 	if(dataReady()){
 		Wire.beginTransmission(ADDRESS); 
 		Wire.send(ACCEL_DATA);

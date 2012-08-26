@@ -22,7 +22,7 @@ namespace ACC_Registers{
 class Accelerometer{
 	public:
 		Accelerometer();
-		bool refreshData(Vector<int> &vector);
+		bool getData(Vector<int> &vector);
 
 		uint8_t deltaT;
 		uint8_t deltaT_old;
