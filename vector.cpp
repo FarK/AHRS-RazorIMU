@@ -24,6 +24,34 @@ void Vector<T>::normalize(){
 	z *= inorm;
 }
 
+template <typename T>
+float Vector<T>::iNorm() const{
+	return invSqrt(x*x + y*y + z*z);
+}
+
+template <typename T> template<typename T2>
+Vector<T> Vector<T>::operator+(const Vector<T2> &v) const{
+	return Vector(x + v.x, y + v.y, z + v.z);
+}
+
+template <typename T>
+Vector<T> Vector<T>::operator/(const float &scalar) const{
+	return Vector(x/scalar, y/scalar, z/scalar);
+}
+
+template<typename T> template<typename T2>
+T Vector<T>::operator*(const Vector<T2> &v) const{
+	return x*v.x + y*v.y + z*v.z;
+}
+
+template<typename T> template<typename T2>
+Vector<T> Vector<T>::operator*(T2 s) const{
+	return Vector(x*s, y*s, z*s);
+}
+
 //Instanciación explicita
 template class Vector<int>;
 template class Vector<float>;
+template Vector<float> Vector<float>::operator+(const Vector<int> &v) const;
+template float Vector<float>::operator*(const Vector<int> &v) const;
+template Vector<float> Vector<float>::operator*(float f) const;
