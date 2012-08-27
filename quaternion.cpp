@@ -1,4 +1,5 @@
 #include "quaternion.h"
+#include "vector.h"
 #include "mathUtils.h"
 
 Quaternion::Quaternion(){
@@ -47,7 +48,8 @@ Quaternion Quaternion::operator*(const Quaternion &q){
 			);
 }
 
-Quaternion Quaternion::rotateVector(float dx, float dy, float dz){
+template <typename T>
+Vector<float> Quaternion::rotateVector(const Vector<T> &v){
 	//Auxiliary variables to reduce number of repeated operations
 	//float q0q0 = q0*q0;
 	float q0q1 = q0*q1;
@@ -60,10 +62,12 @@ Quaternion Quaternion::rotateVector(float dx, float dy, float dz){
 	float q2q3 = q2*q3;
 	float q3q3 = q3*q3;          
 
-	return Quaternion(
-			0.0f,
-			2*dx*(0.5f - q2q2 - q3q3) + 2*dy*(q0q3 + q1q2) + 2*dz*(q1q3 - q0q2),
-			2*dx*(q1q2 - q0q3) + 2*dy*(0.5f - q1q1 - q3q3) + 2*dz*(q0q1 + q2q3),
-			2*dx*(q0q2 + q1q3) + 2*dy*(q2q3 - q0q1) + 2*dz*(0.5f - q1q1 + q2q2)
+	return Vector<float>(
+			2*v.x*(0.5f - q2q2 - q3q3) + 2*v.y*(q0q3 + q1q2) + 2*v.z*(q1q3 - q0q2),
+			2*v.x*(q1q2 - q0q3) + 2*v.y*(0.5f - q1q1 - q3q3) + 2*v.z*(q0q1 + q2q3),
+			2*v.x*(q0q2 + q1q3) + 2*v.y*(q2q3 - q0q1) + 2*v.z*(0.5f - q1q1 + q2q2)
 			);
 } 
+
+//Instanciación explicita
+template Vector<float> Quaternion::rotateVector(const Vector<float> &v);

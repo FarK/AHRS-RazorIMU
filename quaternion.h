@@ -1,6 +1,8 @@
 #ifndef QUATERNION_H
 #define QUATERNION_H
 
+#include "vector.h"
+
 class Quaternion{
 	public:
 		//CONSTRUCTORS
@@ -14,13 +16,16 @@ class Quaternion{
 	
 		//Sum term by term
 		Quaternion operator+(const Quaternion &q);
-		//Hamilton rule product
-		Quaternion operator*(const float f);
+
 		//Product with a scalar
+		Quaternion operator*(const float f);
+
+		//Hamilton rule product
 		Quaternion operator*(const Quaternion &q);
 
 		//Rotate vector according to quaternion
-		Quaternion rotateVector(float dx, float dy, float dz);
+		template <typename T>
+		Vector<float> rotateVector(const Vector<T> &vector);
 
 		//ATRIBUTES
 		float q0,q1,q2,q3;
