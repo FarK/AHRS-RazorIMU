@@ -23,6 +23,10 @@ class Quaternion{
 		//Hamilton rule product
 		Quaternion operator*(const Quaternion &q);
 
+		//Hamilton rule product with vector
+		template <typename T>
+		Quaternion operator*(const Vector<T> &q);
+
 		//Rotate vector according to quaternion
 		template <typename T>
 		Vector<float> rotateVector(const Vector<T> &vector);

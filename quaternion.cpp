@@ -49,6 +49,16 @@ Quaternion Quaternion::operator*(const Quaternion &q){
 }
 
 template <typename T>
+Quaternion Quaternion::operator*(const Vector<T> &v){
+	return Quaternion(
+			       - q1*v.x - q2*v.y - q3*v.z,
+			q0*v.x          + q2*v.z - q3*v.y,
+			q0*v.y - q1*v.z          + q3*v.x,
+			q0*v.z + q1*v.y - q2*v.x
+			);
+}
+
+template <typename T>
 Vector<float> Quaternion::rotateVector(const Vector<T> &v){
 	//Auxiliary variables to reduce number of repeated operations
 	//float q0q0 = q0*q0;
@@ -71,3 +81,4 @@ Vector<float> Quaternion::rotateVector(const Vector<T> &v){
 
 //Instanciación explicita
 template Vector<float> Quaternion::rotateVector(const Vector<float> &v);
+template Quaternion Quaternion::operator*(const Vector<float> &v);
