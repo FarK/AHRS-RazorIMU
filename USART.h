@@ -34,7 +34,8 @@ namespace USART_FRAME{
 
 class USART{
 	public:
-		USART(int baud);
+		//If baud = 0, baudRate = 500000
+		USART(int baud = 0);
 		void send(uint8_t);
 		void send(uint8_t* buff, uint8_t size);
 		void sendFrame(uint8_t* buff, uint8_t size);
