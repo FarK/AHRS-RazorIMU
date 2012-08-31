@@ -3,7 +3,7 @@
 #include "mathUtils.h"
 
 Quaternion::Quaternion(){
-	q0 = 0;
+	q0 = 1;
 	q1 = 0;
 	q2 = 0;
 	q3 = 0;
