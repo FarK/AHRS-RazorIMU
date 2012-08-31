@@ -73,9 +73,9 @@ Vector<float> Quaternion::rotateVector(const Vector<T> &v){
 	float q3q3 = q3*q3;          
 
 	return Vector<float>(
-			2*v.x*(0.5f - q2q2 - q3q3) + 2*v.y*(q0q3 + q1q2) + 2*v.z*(q1q3 - q0q2),
-			2*v.x*(q1q2 - q0q3) + 2*v.y*(0.5f - q1q1 - q3q3) + 2*v.z*(q0q1 + q2q3),
-			2*v.x*(q0q2 + q1q3) + 2*v.y*(q2q3 - q0q1) + 2*v.z*(0.5f - q1q1 + q2q2)
+			2.0f*v.x*(0.5f - q2q2 - q3q3) + 2.0f*v.y*(q0q3 + q1q2) + 2.0f*v.z*(q1q3 - q0q2),
+			2.0f*v.x*(q1q2 - q0q3) + 2.0f*v.y*(0.5f - q1q1 - q3q3) + 2.0f*v.z*(q0q1 + q2q3),
+			2.0f*v.x*(q0q2 + q1q3) + 2.0f*v.y*(q2q3 - q0q1) + 2.0f*v.z*(0.5f - q1q1 - q2q2)
 			);
 } 
 
