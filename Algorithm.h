@@ -13,8 +13,8 @@
 
 //Dirección del vector M y su norma en la EEPROM
 namespace Algoritm_Const{
-	const uint8_t * M_dir = (uint8_t*)0;
-	const uint8_t * Mnorm_dir = M_dir + sizeof(Vector<float>);
+	static const uint8_t * M_dir = (uint8_t*)0;
+	static const uint8_t * Mnorm_dir = M_dir + sizeof(Vector<float>);
 
 	//Número de muestras para calcular la media en la calibración
 	const uint8_t numSamples = 10;
