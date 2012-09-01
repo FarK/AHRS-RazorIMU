@@ -70,14 +70,12 @@ void Algorithm::magnetometer(const Vector<float> &m){
 			m.z*M.x - m.x*M.z,
 			m.x*M.y - m.y*M.x
 		       );
+	r.normalize();
 
 	//Calculamos el cuaternión ESq_M (eq. X.24)
 	float miNorm = m.iNorm();
 	float T;
-	if(MiNorm < 0.01 || miNorm < 0.01)
-		T = 0;
-	else
-		T = (M*m)*(MiNorm*miNorm*0.5);
+	T = (M*m)*MiNorm*miNorm*0.5;
 
 	float S = sqrt(0.5 - T);
 	
