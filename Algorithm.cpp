@@ -59,7 +59,7 @@ void Algorithm::calibration(Accelerometer &acc, Magnetometer &mag){
 	eeprom_update_block(&MiNorm, (uint8_t*)MiNorm_dir, sizeof(MiNorm));
 }
 
-void Algorithm::gyroscope(const Vector<float> &gyr, uint8_t deltaT){
+void Algorithm::gyroscope(const Vector<float> &gyr, float deltaT){
 	SEq_G = SEq_G + (SEq_G*gyr)*deltaT*0.5;	//eq X.17 y X.18
 }
 
