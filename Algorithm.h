@@ -32,6 +32,7 @@ class Algorithm{
 		void oarOrientationCorrection();
 
 		Vector<float> M;
+		float Mnorm;
 		Quaternion ESq;
 		Quaternion SEq_G;
 		Quaternion ESq_M;
