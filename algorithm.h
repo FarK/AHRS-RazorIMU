@@ -28,7 +28,7 @@ class Algorithm{
 
 		void calibration(Accelerometer &acc, Magnetometer &mag);
 		void gyroscope(const Vector<float> &gyr, float deltaT);
-		void magnetometer(const Vector<int> &mag);
+		void magnetometer(const Vector<float> &mag);
 		void oarOrientationCorrection();
 
 		Vector<float> M;

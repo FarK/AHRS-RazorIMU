@@ -63,7 +63,7 @@ void Algorithm::gyroscope(const Vector<float> &gyr, float deltaT){
 	SEq_G = SEq_G + (SEq_G*gyr)*deltaT*0.5;	//eq X.17 y X.18
 }
 
-void Algorithm::magnetometer(const Vector<int> &m){
+void Algorithm::magnetometer(const Vector<float> &m){
 	//Calculamos el vector r (eq. X.23)
 	Vector<float> r(
 			m.y*M.z - m.z*M.y,
