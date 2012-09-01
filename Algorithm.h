@@ -17,7 +17,8 @@ namespace Algoritm_Const{
 	static const uint8_t * Mnorm_dir = M_dir + sizeof(Vector<float>);
 
 	//Número de muestras para calcular la media en la calibración
-	const uint8_t numSamples = 10;
+	static const uint8_t numSamples = 30;
+	static const float iNumSamples = 1.0/(float(numSamples));
 }
 
 //Notación para cuaterniones: {Sist. referencia}{Sist. rotado}q_{Sub índice}
