@@ -14,7 +14,7 @@
 //Dirección del vector M y su norma en la EEPROM
 namespace Algoritm_Const{
 	static const uint8_t * M_dir = (uint8_t*)0;
-	static const uint8_t * Mnorm_dir = M_dir + sizeof(Vector<float>);
+	static const uint8_t * MiNorm_dir = M_dir + sizeof(Vector<float>);
 
 	//Número de muestras para calcular la media en la calibración
 	static const uint8_t numSamples = 30;
@@ -32,7 +32,7 @@ class Algorithm{
 		void oarOrientationCorrection();
 
 		Vector<float> M;
-		float Mnorm;
+		float MiNorm;
 		Quaternion ESq;
 		Quaternion SEq_G;
 		Quaternion ESq_M;
