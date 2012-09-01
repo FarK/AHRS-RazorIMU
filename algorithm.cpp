@@ -1,4 +1,4 @@
-#include "Algorithm.h"
+#include "algorithm.h"
 
 #include <stdint.h>
 #include <avr/eeprom.h>
@@ -11,40 +11,55 @@
 using namespace Algoritm_Const;
 
 Algorithm::Algorithm(){
-	//Cargamos en memoria el vector M
+	//Cargamos en memoria el vector M y su módulo
 	eeprom_read_block(&M, M_dir, sizeof(M));
+	eeprom_read_block(&MiNorm, MiNorm_dir, sizeof(MiNorm));
 }
 
-void Algorithm::calibration(Accelerometer &acc, const Magnetometer &mag){
+void Algorithm::calibration(Accelerometer &acc, Magnetometer &mag){
 	//Calculamos la media de varias muestras del vector de acceleración y
 	//del vector magnético
-	Vector<int> tmp;
-	Vector<float> a;
-	Vector<float> m;
-	for(int i = numSamples ; i > 0 ; --i){
-		while(!acc.getData(tmp)); //Esperamos a tener un dato
-		a = a + tmp/numSamples; //Actualizamos la media
+	Vector<int> tmpA(0,0,0);
+	Vector<float> tmpM(0,0,0);
+	Vector<float> a(0,0,0);
+	Vector<float> m(0,0,0);
 
-		while(!acc.getData(tmp)); //Esperamos a tener un dato
-		m = m + tmp/numSamples; //Actualizamos la media
+	//Descartamos las primeras muestras (sulen ser erroneas)
+	for(int i = numSamples ; i > 0 ; --i, acc.getData(tmpA), mag.getData(tmpM));
+
+	//Calculamos la media de unas cuantas muestras
+	for(int i = numSamples ; i > 0 ; --i){
+		while(!acc.getData(tmpA)); //Esperamos a tener un dato
+		//Actualizamos la media
+		a.x += tmpA.x*iNumSamples;
+		a.y += tmpA.y*iNumSamples;
+		a.z += tmpA.z*iNumSamples;
+
+		while(!mag.getData(tmpM)); //Esperamos a tener un dato
+		//Actualizamos la media
+		m.x += tmpM.x*iNumSamples;
+		m.y += tmpM.y*iNumSamples;
+		m.z += tmpM.z*iNumSamples;
 	}
 
 	float T = a.z*a.iNorm()*0.5;	//eq X.16a
 	float S = sqrt(0.5 - T);	//eq X16b
+	Vector<float> r(-a.y, a.x, 0);
+	r.normalize();
 
 	//Creamos el cuaternión para la rotación
-	Quaternion ESq_rot(sqrt(0.5 + T), a.y*S, -a.x*S, 0);	//eq X.16
-	ESq_rot.normalize();
+	Quaternion ESq_rot(sqrt(0.5 + T), r.x*S, r.y*S, 0);	//eq X.16
 	
 	//Rotamos el vector m para obtener M
-	ESq_rot.conjugate();	//Ahora ESq_rot = SEq_rot
 	M = ESq_rot.rotateVector(m);	//eq X.11
+	MiNorm = M.iNorm();
 
-	//Guardamos M en la eeprom
+	//Guardamos M y su módulo en la eeprom
 	eeprom_update_block(&M, (uint8_t*)M_dir, sizeof(M));
+	eeprom_update_block(&MiNorm, (uint8_t*)MiNorm_dir, sizeof(MiNorm));
 }
 
-void Algorithm::gyroscope(const Vector<float> &gyr, uint8_t deltaT){
+void Algorithm::gyroscope(const Vector<float> &gyr, float deltaT){
 	SEq_G = SEq_G + (SEq_G*gyr)*deltaT*0.5;	//eq X.17 y X.18
 }
 
@@ -57,13 +72,21 @@ void Algorithm::magnetometer(const Vector<int> &m){
 		       );
 
 	//Calculamos el cuaternión ESq_M (eq. X.24)
-	float T = (M*m)*(M.iNorm()*m.iNorm()*0.5);
+	float miNorm = m.iNorm();
+	float T;
+	if(MiNorm < 0.01 || miNorm < 0.01)
+		T = 0;
+	else
+		T = (M*m)*(MiNorm*miNorm*0.5);
+
 	float S = sqrt(0.5 - T);
 	
 	ESq_M.q0 = sqrt(0.5 + T);
 	ESq_M.q1 = -r.x*S;
 	ESq_M.q2 = -r.y*S;
 	ESq_M.q3 = -r.z*S;
+
+	ESq_M.normalize();
 }
 
 void Algorithm::oarOrientationCorrection(){

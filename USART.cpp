@@ -13,8 +13,9 @@ namespace USART_FRAME{
 using namespace USART_FRAME;
 
 USART::USART(int baud){
-	//Calcule baudrate register value
-	long br = ((F_CPU + baud * 8L) / (baud * 16L) - 1);
+	//Calcule baudrate register value. If baud = 0, baudRate = 500000
+	long br = 0;
+	if(baud) br = ((F_CPU + baud * 8L) / (baud * 16L) - 1);
 
 	//Disable double transmission speed
 	UCSR0A &= ~_BV(U2X0);

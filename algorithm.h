@@ -13,11 +13,12 @@
 
 //Dirección del vector M y su norma en la EEPROM
 namespace Algoritm_Const{
-	const uint8_t * M_dir = (uint8_t*)0;
-	const uint8_t * Mnorm_dir = M_dir + sizeof(Vector<float>);
+	static const uint8_t * M_dir = (uint8_t*)0;
+	static const uint8_t * MiNorm_dir = M_dir + sizeof(Vector<float>);
 
 	//Número de muestras para calcular la media en la calibración
-	const uint8_t numSamples = 10;
+	static const uint8_t numSamples = 30;
+	static const float iNumSamples = 1.0/(float(numSamples));
 }
 
 //Notación para cuaterniones: {Sist. referencia}{Sist. rotado}q_{Sub índice}
@@ -25,12 +26,13 @@ class Algorithm{
 	public:
 		Algorithm();
 
-		void calibration(Accelerometer &acc, const Magnetometer &mag);
-		void gyroscope(const Vector<float> &gyr, uint8_t deltaT);
+		void calibration(Accelerometer &acc, Magnetometer &mag);
+		void gyroscope(const Vector<float> &gyr, float deltaT);
 		void magnetometer(const Vector<int> &mag);
 		void oarOrientationCorrection();
 
 		Vector<float> M;
+		float MiNorm;
 		Quaternion ESq;
 		Quaternion SEq_G;
 		Quaternion ESq_M;
