@@ -19,16 +19,9 @@ class Vector{
 		template <typename T2>
 		Vector<T> operator+(const Vector<T2> &v) const;
 
-		//Division term by term
-		Vector<T> operator/(const float &scalar) const;
-
 		//Dot product
 		template <typename T2>
 		T operator*(const Vector<T2> &v) const;
-
-		//Product whit scalar
-		template <typename T2>
-		Vector<T> operator*(T2 scalar) const;
 };
 
 #endif
