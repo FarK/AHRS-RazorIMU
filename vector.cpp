@@ -37,4 +37,4 @@ T Vector<T>::operator*(const Vector<T2> &v) const{
 //Instanciación explicita
 template class Vector<int>;
 template class Vector<float>;
-template float Vector<float>::operator*(const Vector<int> &v) const;
+template float Vector<float>::operator*(const Vector<float> &v) const;
