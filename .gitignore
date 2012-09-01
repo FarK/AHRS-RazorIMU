@@ -18,3 +18,7 @@ tags
 
 #vim swaps files
 *.swp
+
+#vim session files
+session.vim
+session.vim!
