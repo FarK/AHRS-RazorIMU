@@ -11,8 +11,9 @@
 using namespace Algoritm_Const;
 
 Algorithm::Algorithm(){
-	//Cargamos en memoria el vector M
+	//Cargamos en memoria el vector M y su módulo
 	eeprom_read_block(&M, M_dir, sizeof(M));
+	eeprom_read_block(&Mnorm, Mnorm_dir, sizeof(Mnorm));
 }
 
 void Algorithm::calibration(Accelerometer &acc, const Magnetometer &mag){
@@ -40,8 +41,9 @@ void Algorithm::calibration(Accelerometer &acc, const Magnetometer &mag){
 	ESq_rot.conjugate();	//Ahora ESq_rot = SEq_rot
 	M = ESq_rot.rotateVector(m);	//eq X.11
 
-	//Guardamos M en la eeprom
+	//Guardamos M y su módulo en la eeprom
 	eeprom_update_block(&M, (uint8_t*)M_dir, sizeof(M));
+	eeprom_update_block(&Mnorm, (uint8_t*)Mnorm_dir, sizeof(Mnorm));
 }
 
 void Algorithm::gyroscope(const Vector<float> &gyr, uint8_t deltaT){
