@@ -26,7 +26,7 @@ CXX_HDRS = Wire.h \
 	   USART.h \
 	   quaternion.h \
 	   vector.h \
-	   Algorithm.h \
+	   algorithm.h \
 	   mathUtils.h \
 	   timer8b.h
 

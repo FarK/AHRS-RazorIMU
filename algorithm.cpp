@@ -1,4 +1,4 @@
-#include "Algorithm.h"
+#include "algorithm.h"
 
 #include <stdint.h>
 #include <avr/eeprom.h>
