@@ -72,13 +72,21 @@ void Algorithm::magnetometer(const Vector<int> &m){
 		       );
 
 	//Calculamos el cuaternión ESq_M (eq. X.24)
-	float T = (M*m)*(M.iNorm()*m.iNorm()*0.5);
+	float miNorm = m.iNorm();
+	float T;
+	if(MiNorm < 0.01 || miNorm < 0.01)
+		T = 0;
+	else
+		T = (M*m)*(MiNorm*miNorm*0.5);
+
 	float S = sqrt(0.5 - T);
 	
 	ESq_M.q0 = sqrt(0.5 + T);
 	ESq_M.q1 = -r.x*S;
 	ESq_M.q2 = -r.y*S;
 	ESq_M.q3 = -r.z*S;
+
+	ESq_M.normalize();
 }
 
 void Algorithm::oarOrientationCorrection(){
