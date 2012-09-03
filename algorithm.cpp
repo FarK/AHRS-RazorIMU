@@ -64,6 +64,7 @@ void Algorithm::gyroscope(const Vector<float> &gyr, float deltaT){
 }
 
 void Algorithm::magnetometer(const Vector<float> &m){
+	Ms = ESq_M.conjugated().rotateVector(M);
 	//Calculamos el vector r (eq. X.23)
 	Vector<float> r(
 			m.y*M.z - m.z*M.y,
@@ -78,11 +79,11 @@ void Algorithm::magnetometer(const Vector<float> &m){
 	T = (M*m)*MiNorm*miNorm*0.5;
 
 	float S = sqrt(0.5 - T);
+
+	ESq_Mc = Quaternion(sqrt(0.5f + T), -r.x*S, -r.y*S, -r.z*S);
+	//ESq_Mc.normalize();
 	
-	ESq_M.q0 = sqrt(0.5 + T);
-	ESq_M.q1 = -r.x*S;
-	ESq_M.q2 = -r.y*S;
-	ESq_M.q3 = -r.z*S;
+	ESq_M = ESq_M*ESq_Mc;
 
 	ESq_M.normalize();
 }
