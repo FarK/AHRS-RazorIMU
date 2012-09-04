@@ -28,7 +28,8 @@ CXX_HDRS = Wire.h \
 	   vector.h \
 	   algorithm.h \
 	   mathUtils.h \
-	   timer8b.h
+	   timer8b.h \
+	   timer16b.h
 
 CXX_SRCS = $(CXX_HDRS:.h=.cpp)
 CXX_OBJ = $(CXX_HDRS:.h=.o)
