@@ -34,6 +34,11 @@ T Vector<T>::operator*(const Vector<T2> &v) const{
 	return x*v.x + y*v.y + z*v.z;
 }
 
+template<typename T>
+Vector<T> Vector<T>::operator-(const Vector<T> &v) const{
+	return Vector(x-v.x, y-v.y, z-v.z);
+}
+
 //Instanciación explicita
 template class Vector<int>;
 template class Vector<float>;

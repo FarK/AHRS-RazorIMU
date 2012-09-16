@@ -15,6 +15,8 @@ class Vector{
 		void normalize();
 		float iNorm() const;
 
+		//Subtraction term by term
+		Vector<T> operator-(const Vector<T> &v) const;
 
 		//Dot product
 		template <typename T2>
