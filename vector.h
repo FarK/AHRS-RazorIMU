@@ -15,9 +15,6 @@ class Vector{
 		void normalize();
 		float iNorm() const;
 
-		//Sum term by term
-		template <typename T2>
-		Vector<T> operator+(const Vector<T2> &v) const;
 
 		//Dot product
 		template <typename T2>
