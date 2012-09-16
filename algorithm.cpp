@@ -60,38 +60,55 @@ void Algorithm::calibration(Accelerometer &acc, Magnetometer &mag){
 }
 
 void Algorithm::gyroscope(const Vector<float> &gyr, float deltaT){
-	SEq_G = SEq_G + (SEq_G*gyr)*deltaT*0.5;	//eq X.17 y X.18
+	dSEq_G = (SEq*gyr)*0.5f;
+	dSEq_G.normalize();
 }
 
-void Algorithm::magnetometer(const Vector<float> &m){
-	Ms = ESq_M.conjugated().rotateVector(M);
-	//Calculamos el vector r (eq. X.23)
-	Vector<float> r(
-			m.y*M.z - m.z*M.y,
-			m.z*M.x - m.x*M.z,
-			m.x*M.y - m.y*M.x
-		       );
-	r.normalize();
+void Algorithm::magnetometer(const Vector<float> &m, float deltaT){
+	//Variables auxiliares para no repetir cuentas
+	float Mxq0 = M.x*SEq.q0;
+	float Mxq1 = M.x*SEq.q1;
+	float Mxq2 = M.x*SEq.q2;
+	float Mxq3 = M.x*SEq.q3;
+	                   
+	float Myq0 = M.y*SEq.q0;
+	float Myq1 = M.y*SEq.q1;
+	float Myq2 = M.y*SEq.q2;
+	float Myq3 = M.y*SEq.q3;
+                           
+	float Mzq0 = M.z*SEq.q0;
+	float Mzq1 = M.z*SEq.q1;
+	float Mzq2 = M.z*SEq.q2;
+	float Mzq3 = M.z*SEq.q3;
 
-	//Calculamos el cuaternión ESq_M (eq. X.24)
-	float miNorm = m.iNorm();
-	float T;
-	T = (M*m)*MiNorm*miNorm*0.5;
+	Ms = SEq.rotateVector(M);
 
-	float S = sqrt(0.5 - T);
+	Vector<float> f = Ms - m;
 
-	ESq_Mc = Quaternion(sqrt(0.5f + T), -r.x*S, -r.y*S, -r.z*S);
-	//ESq_Mc.normalize();
+	dSEq_M = Quaternion(
+		(Myq3-Mzq2)*f.x			+ (Mzq1-Mxq3)*f.y		+ (Mxq2-Myq1)*f.z,
+       		(Myq2+Mzq3)*f.x			+ (Mxq2-2.0f*Myq1+Mzq0)*f.y	+ (Mxq3-Myq0-2.0f*Mzq1)*f.z,
+		(Myq1-2.0f*Mxq2-Mzq0)*f.x	+ (Mxq1+Mzq3)*f.y		+ (Mxq0+Myq3-2.0f*Mzq2)*f.z,
+		(Myq0-2.0f*Mxq3+Mzq1)*f.x	+ (Mzq2-Mxq0-2.0f*Myq3)*f.y	+ (Mxq1+Myq2)*f.z
+	);
+	dSEq_M = dSEq_M*2.0f;
 	
-	ESq_M = ESq_M*ESq_Mc;
+	dSEq_M.normalize();
+}
 
-	ESq_M.normalize();
+void Algorithm::fusion(float deltaT){
+	SEq = SEq + (dSEq_G - dSEq_M*B)*deltaT;
+	SEq.normalize();
+}
+
+void Algorithm::correction(){
+	SEq = SEq*SScq_C;
 }
 
 void Algorithm::oarOrientationCorrection(){
 	//Calculamos z_x y z_z (eq. X.25)
-	float z_x = 2*(ESq.q1*ESq.q3 - ESq.q0*ESq.q2);
-	float z_z = 1 - 2*(ESq.q1*ESq.q1 - ESq.q2*ESq.q2);
+	float z_x = 2*(SEq.q1*SEq.q3 - SEq.q0*SEq.q2);
+	float z_z = 1 - 2*(SEq.q1*SEq.q1 - SEq.q2*SEq.q2);
 
 	//Calculamos T_a y T_b
 	float iR = invSqrt(z_x*z_x + z_z*z_z);
@@ -103,13 +120,13 @@ void Algorithm::oarOrientationCorrection(){
 	if(T_a >= T_b){
 		SScq_C.q0 = sqrt(0.5 + T_a);
 		SScq_C.q1 = 0;
-		SScq_C.q2 = -sqrt(0.5 - T_a);
+		SScq_C.q2 = sqrt(0.5 - T_a);
 		SScq_C.q3 = 0;
 	}
 	else{
 		SScq_C.q0 = sqrt(0.5 + T_b);
 		SScq_C.q1 = 0;
-		SScq_C.q2 = -sqrt(0.5 - T_b);
+		SScq_C.q2 = sqrt(0.5 - T_b);
 		SScq_C.q3 = 0;
 	}
 }

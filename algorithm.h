@@ -19,6 +19,9 @@ namespace Algoritm_Const{
 	//Número de muestras para calcular la media en la calibración
 	static const uint8_t numSamples = 30;
 	static const float iNumSamples = 1.0/(float(numSamples));
+
+	//Constante K para fusión
+	static const float B = 0.1f;
 }
 
 //Notación para cuaterniones: {Sist. referencia}{Sist. rotado}q_{Sub índice}
@@ -28,15 +31,19 @@ class Algorithm{
 
 		void calibration(Accelerometer &acc, Magnetometer &mag);
 		void gyroscope(const Vector<float> &gyr, float deltaT);
-		void magnetometer(const Vector<float> &mag);
+		void magnetometer(const Vector<float> &mag, float deltaT);
+		void fusion(float deltaT);
 		void oarOrientationCorrection();
+		void correction();
 
 		Vector<float> M;
 		float MiNorm;
-		Quaternion ESq;
-		Quaternion SEq_G;
-		Quaternion ESq_M;
+		Quaternion SEq;
+		Quaternion dSEq_G;
+		Quaternion dSEq_M;
 		Quaternion SScq_C;
+
+		Vector<float> Ms;
 };
 
 #endif
