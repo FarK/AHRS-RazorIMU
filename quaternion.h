@@ -11,6 +11,8 @@ class Quaternion{
 
 		//Conjuge this quaternion
 		void conjugate();
+		//Return a conjugated quaternion
+		Quaternion conjugated();
 		//Normalize this cuaternion
 		void normalize();
 	

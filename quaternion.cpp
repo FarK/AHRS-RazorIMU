@@ -22,6 +22,10 @@ void Quaternion::conjugate(){
 	q3 = -q3;
 }
 
+Quaternion Quaternion::conjugated(){
+	return Quaternion(q0, -q1, -q2, -q3);
+}
+
 void Quaternion::normalize(){
 	float inorm = invSqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
 
