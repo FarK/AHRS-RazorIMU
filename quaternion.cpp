@@ -39,6 +39,10 @@ Quaternion Quaternion::operator+(const Quaternion &q){
 	return Quaternion(q0+q.q0, q1+q.q1, q2+q.q2, q3+q.q3);
 }
 
+Quaternion Quaternion::operator-(const Quaternion &q){
+	return Quaternion(q0-q.q0, q1-q.q1, q2-q.q2, q3-q.q3);
+}
+
 Quaternion Quaternion::operator*(const float f){
 	return Quaternion(q0*f, q1*f, q2*f, q3*f);
 }

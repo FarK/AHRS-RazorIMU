@@ -19,6 +19,9 @@ class Quaternion{
 		//Sum term by term
 		Quaternion operator+(const Quaternion &q);
 
+		//Subtraction term by term
+		Quaternion operator-(const Quaternion &q);
+
 		//Product with a scalar
 		Quaternion operator*(const float f);
 
