@@ -71,9 +71,9 @@ int main()
 			frame.gy = vectGyro.y;
 			frame.gz = vectGyro.z;
 
-			frame.ax = algorithm.Ms.x;
-			frame.ay = algorithm.Ms.y;
-			frame.az = algorithm.Ms.z;
+			frame.ax = vectAcce.x;
+			frame.ay = vectAcce.y;
+			frame.az = vectAcce.z;
 
 			frame.mx = vectMagn.x;
 			frame.my = vectMagn.y;
