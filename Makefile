@@ -34,7 +34,7 @@ CXX_HDRS = Wire.h \
 CXX_SRCS = $(CXX_HDRS:.h=.cpp)
 CXX_OBJ = $(CXX_HDRS:.h=.o)
 
-AUX_HDRS = declarations.h
+AUX_HDRS = frame.h
 
 #Flags de compilación
 FLAGS_WARN = -Wall

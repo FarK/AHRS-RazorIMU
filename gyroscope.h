@@ -25,8 +25,8 @@ class Gyroscope{
 
 		bool getData(Vector<float> &vector, float &temperature);
 
-		uint8_t deltaT;
-		uint8_t deltaT_old;
+		uint16_t deltaT;
+		uint16_t deltaT_old;
 
 	private:
 		bool dataReady();

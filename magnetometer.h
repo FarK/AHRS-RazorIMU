@@ -38,8 +38,8 @@ class Magnetometer{
 		//Sets magnetic vector
 		bool getData(Vector<float> &vector);
 
-		uint8_t deltaT;
-		uint8_t deltaT_old;
+		uint16_t deltaT;
+		uint16_t deltaT_old;
 	
 	private:
 		//True if the new measurement are ready to be read
