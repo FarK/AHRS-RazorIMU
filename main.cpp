@@ -19,7 +19,7 @@ extern "C" void __cxa_pure_virtual(void) {
 
 int main()
 {
-	int count = 50;
+	int count = 10;
 	//Frame to send
 	Frame frame = {{0, 1,0,0,0, 0,0,0, 0,0,0, 0,0,0}};
 
@@ -38,16 +38,16 @@ int main()
 	Wire.begin();    	//Init the I2C
 	_delay_ms(20);
 	Algorithm algorithm;
-	USART usart;	//Init the USART
+	USART usart;		//Init the USART
 	Gyroscope gyr;		//Init the Gyroscope
-	Accelerometer acc;	//Init the Gyroscope
-	PORTB |= _BV(PB5);
-	Magnetometer mgt;	//Init the Gyroscope
-	PORTB &= ~_BV(PB5);
+	Accelerometer acc;	//Init the Accelerometer
+	Magnetometer mgt;	//Init the Magnetometer
 	_delay_ms(100);
-	Timer16b timer;		//Init the Gyroscope
+	Timer16b timer;		//Init the Timmer
 
 	timer.start(Timer16b_Const::CLK_8);	//timer start
+
+	//algorithm.calibration(acc, mgt);
 
 	while(1){
 		if(gyr.getData(vectGyro, temperature))
@@ -56,36 +56,42 @@ int main()
 		if(mgt.getData(vectMagn)){
 			algorithm.magnetometer(vectMagn);
 			algorithm.fusion();
+			algorithm.oarOrientationCorrection();
 			algorithm.correction();
+
+			if(!count){
+				count = 5;
+
+				frame.q0 = algorithm.ESq.q0;
+				frame.q1 = algorithm.ESq.q1;
+				frame.q2 = algorithm.ESq.q2;
+				frame.q3 = algorithm.ESq.q3;
+
+				frame.gx = vectGyro.x;
+				frame.gy = vectGyro.y;
+				frame.gz = vectGyro.z;
+
+				frame.ax = vectAcce.x;
+				frame.ay = vectAcce.y;
+				frame.az = vectAcce.z;
+
+				frame.mx = vectMagn.x;
+				frame.my = vectMagn.y;
+				frame.mz = vectMagn.z;
+
+				++frame.time;
+
+				usart.sendFrame(frame.buff, sizeof(Frame));
+
+				//StatusLEDToggle
+				PORTB ^= _BV(PB5);
+			}
+			--count;
 		}
-
-		if(!count){
-			count = 50;
-
-			frame.q0 = algorithm.ESq.q0;
-			frame.q1 = algorithm.ESq.q1;
-			frame.q2 = algorithm.ESq.q2;
-			frame.q3 = algorithm.ESq.q3;
-
-			frame.ax = algorithm.M.x;
-			frame.ay = algorithm.M.y;
-			frame.az = algorithm.M.z;
-
-			frame.mx = algorithm.Ms.x;
-			frame.my = algorithm.Ms.y;
-			frame.mz = algorithm.Ms.z;
-
-			frame.gx = vectGyro.x;
-			frame.gy = vectGyro.y;
-			frame.gz = vectGyro.z;
-
-			frame.time++;
-
-			usart.sendFrame(frame.buff, sizeof(Frame));
-
-			//StatusLEDToggle
-			PORTB ^= _BV(PB5);
-		}
-		--count;
 	}
 }
+
+//Detección de overflow en el timer
+//ISR(TIMER1_OVF_vect){
+//	PORTB |= _BV(PB5);
+//}
