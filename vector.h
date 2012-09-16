@@ -15,6 +15,8 @@ class Vector{
 		void normalize();
 		float iNorm() const;
 
+		//Product with scalar
+		Vector<T> operator*(const T scalar) const;
 
 		//Dot product
 		template <typename T2>
