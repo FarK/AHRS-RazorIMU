@@ -60,7 +60,8 @@ void Algorithm::calibration(Accelerometer &acc, Magnetometer &mag){
 }
 
 void Algorithm::gyroscope(const Vector<float> &gyr, float deltaT){
-	SEq_G = SEq_G + (SEq_G*gyr)*deltaT*0.5;	//eq X.17 y X.18
+	ESq = ESq + (ESq*(gyr*-1))*deltaT*0.5;	//eq X.17 y X.18
+	ESq.normalize();
 }
 
 void Algorithm::magnetometer(const Vector<float> &m){
@@ -80,20 +81,18 @@ void Algorithm::magnetometer(const Vector<float> &m){
 
 	float S = sqrt(0.5 - T);
 
-	Quaternion ESq_Mc = Quaternion(sqrt(0.5f + T), -r.x*S, -r.y*S, -r.z*S);
-	ESq_Mc.normalize();
-	
-	ESq_M = ESq*ESq_Mc;
-
+	ESq_M = Quaternion(sqrt(0.5f + T), -r.x*S, -r.y*S, -r.z*S);
 	ESq_M.normalize();
 }
 
 void Algorithm::fusion(){
-	ESq = SEq_G.conjugated()*ESq_M;
+	ESq = ESq*ESq_M;
+	//ESq = ESq_M*ESq;
 }
 
 void Algorithm::correction(){
 	ESq = SScq_C*ESq;
+	//ESq = ESq*SScq_C;
 }
 
 void Algorithm::oarOrientationCorrection(){
