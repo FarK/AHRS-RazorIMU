@@ -50,7 +50,7 @@ bool Accelerometer::getData(Vector<int> &vector){
 
 		//Actulize deltaT
 		cli();
-		uint8_t timeStamp = TCNT0;
+		uint16_t timeStamp = TCNT1;
 		deltaT = timeStamp - deltaT_old;
 		deltaT_old = timeStamp;
 		sei();
