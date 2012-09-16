@@ -9,7 +9,6 @@
 #include "gyroscope.h"
 #include "accelerometer.h"
 #include "magnetometer.h"
-#include "AHRS.h"
 #include "USART.h"
 #include "vector.h"
 
