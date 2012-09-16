@@ -3,7 +3,7 @@
 #include "USART.h"
 
 namespace USART_FRAME{
-	//Variable for recieving state machine
+	//Variable for receiving state machine
 	State state = USART_FRAME::WAIT_STX;
 	uint8_t frameLength;
 	uint8_t receivedData[FRAME_MAX_LENGTH];
@@ -66,10 +66,10 @@ ISR(USART_RX_vect){
 	switch(state){
 		case WAIT_STX:
 			if(newByte == STX)
-				state = RECIEVING_LENGTH;	
+				state = RECEIVING_LENGTH;	
 		break;
 
-		case RECIEVING_LENGTH:
+		case RECEIVING_LENGTH:
 			switch(newByte){
 				case STX:
 					state = WAIT_STX;
@@ -81,11 +81,11 @@ ISR(USART_RX_vect){
 
 				default:
 					frameLength = newByte;
-					state = RECIEVING_DATA;
+					state = RECEIVING_DATA;
 			}
 		break;
 
-		case RECIEVING_DATA:
+		case RECEIVING_DATA:
 			switch(newByte){
 				case STX:
 					state = WAIT_STX;
@@ -106,7 +106,7 @@ ISR(USART_RX_vect){
 
 		case DISCARD_DLE_L:
 			frameLength = newByte;
-			state = RECIEVING_DATA;
+			state = RECEIVING_DATA;
 		break;
 
 		case DISCARD_DLE_D:
@@ -117,7 +117,7 @@ ISR(USART_RX_vect){
 				dataIndx = 0;
 			}
 			else
-				state = RECIEVING_DATA;
+				state = RECEIVING_DATA;
 		break;
 	}
 }

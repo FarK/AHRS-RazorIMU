@@ -15,16 +15,16 @@ namespace USART_FRAME{
 	const uint8_t STX = 0x63;
 	const uint8_t DLE = 0x64;
 
-	//Recieving state machine constant
+	//Receiving state machine constant
 	typedef enum {
 		WAIT_STX,
-		RECIEVING_LENGTH,
-		RECIEVING_DATA,
+		RECEIVING_LENGTH,
+		RECEIVING_DATA,
 		DISCARD_DLE_L,
 		DISCARD_DLE_D
 	} State; 
 	
-	//Variable for recieving state machine
+	//Variable for receiving state machine
 	extern State state;
 	extern uint8_t frameLength;
 	extern uint8_t receivedData[FRAME_MAX_LENGTH];
