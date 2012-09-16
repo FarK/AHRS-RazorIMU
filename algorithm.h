@@ -29,9 +29,12 @@ class Algorithm{
 		void calibration(Accelerometer &acc, Magnetometer &mag);
 		void gyroscope(const Vector<float> &gyr, float deltaT);
 		void magnetometer(const Vector<float> &mag);
+		void fusion();
+		void correction();
 		void oarOrientationCorrection();
 
 		Vector<float> M;
+		Vector<float> Ms;
 		float MiNorm;
 		Quaternion ESq;
 		Quaternion SEq_G;
