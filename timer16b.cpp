@@ -13,7 +13,7 @@ Timer16b::Timer16b(){
 
 	TCCR1C = (uint8_t) ~_BV(FOC1A) & ~_BV(FOC1B);
 
-	TIMSK1 = (uint8_t) _BV(TOIE1);	//Habilita interrupción por overflow
+	//TIMSK1 = (uint8_t) _BV(TOIE1);	//Habilita interrupción por overflow
 }
 
 
