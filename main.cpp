@@ -2,91 +2,78 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include "Wire.h"
-#include <math.h>
 
-#include "timer8b.h"
+#include "algorithm.h"
+#include "timer16b.h"
 #include "frame.h"
 #include "gyroscope.h"
 #include "accelerometer.h"
 #include "magnetometer.h"
 #include "USART.h"
 #include "vector.h"
+#include "quaternion.h"
 
 extern "C" void __cxa_pure_virtual(void) {
 	while(1);
 }
 
-//Structs for storing sensors data
-SensorData sen_data = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-//Frame to send
-Frame frame;
-
 int main()
 {
+	int count = 50;
+	//Frame to send
+	Frame frame = {{0, 1,0,0,0, 0,0,0, 0,0,0, 0,0,0}};
+
 	//Vectores de los sensores
 	Vector<int> vectAcce(0,0,0);
-	Vector<int> vectMagn(0,0,0);
+	Vector<float> vectMagn(0,0,0);
 	Vector<float> vectGyro(0,0,0);
 	float temperature = 0;
 	
-	//Variables for calculate delta time
-	uint8_t timeStamp = 0;
-	uint8_t ahrsDt_old= 0;
-	uint8_t ahrsDt= 0;
-
-	//Flags for controlling the sampling of the sensors
-	bool aRdy = false;
-	bool gRdy = false;
-	bool mRdy = false;
-
 	//Configure LED pin for debug
 	DDRB |= _BV(PB5);
-	PORTB |= _BV(PB5);
+	PORTB &= ~_BV(PB5);
 
 	sei();	//Enable interrupts
 
 	Wire.begin();    	//Init the I2C
 	_delay_ms(20);
-	USART usart(9600);	//Init the USART
+	Algorithm algorithm;
+	USART usart;	//Init the USART
 	Gyroscope gyr;		//Init the Gyroscope
 	Accelerometer acc;	//Init the Gyroscope
+	PORTB |= _BV(PB5);
 	Magnetometer mgt;	//Init the Gyroscope
-	Timer8b timer;		//Init the Gyroscope
+	PORTB &= ~_BV(PB5);
+	_delay_ms(100);
+	Timer16b timer;		//Init the Gyroscope
 
-	timer.start(Timer8b_Const::CLK_64);	//timer start
+	timer.start(Timer16b_Const::CLK_8);	//timer start
 
 	while(1){
+		if(gyr.getData(vectGyro, temperature))
+			algorithm.gyroscope(vectGyro, (float(gyr.deltaT))*1e-6);
 
-		gRdy = gyr.getData(vectGyro, temperature);
-		aRdy = acc.getData(vectAcce);
-		mRdy = mgt.getData(vectMagn);
-
-		if(aRdy && gRdy && mRdy){
-			cli();
-			timeStamp = TCNT0;
-			ahrsDt = timeStamp - ahrsDt_old;
-			ahrsDt_old = timeStamp;
-			sei();
-			AHRSupdate(&sen_data, ahrsDt*6.25e-6);	//6.25e-6 -> half of Period
-			aRdy = false;
-			gRdy = false;
-			mRdy = false;
+		if(mgt.getData(vectMagn)){
+			algorithm.magnetometer(vectMagn);
+			algorithm.fusion();
+			algorithm.correction();
 		}
 
-		if (TCNT0 > 255/4)
-		{
-			frame.roll = atan(2*(q0*q1 + q2*q3)/(1-2*(q1*q1 + q2*q2)));
-			frame.roll = q0 + q1 + q2 + q3;
-			frame.pitch = asin(2*(q0*q2 - q1*q3));
-			frame.yaw = atan(2*(q0*q3 + q1*q2)/(1-2*(q2*q2 + q3*q3)));
+		if(!count){
+			count = 50;
 
-			frame.ax = (float) vectAcce.x;
-			frame.ay = (float) vectAcce.y;
-			frame.az = (float) vectAcce.z;
+			frame.q0 = algorithm.ESq.q0;
+			frame.q1 = algorithm.ESq.q1;
+			frame.q2 = algorithm.ESq.q2;
+			frame.q3 = algorithm.ESq.q3;
 
-			frame.mx = vectMagn.x;
-			frame.my = vectMagn.y;
-			frame.mz = vectMagn.z;
+			frame.ax = algorithm.M.x;
+			frame.ay = algorithm.M.y;
+			frame.az = algorithm.M.z;
+
+			frame.mx = algorithm.Ms.x;
+			frame.my = algorithm.Ms.y;
+			frame.mz = algorithm.Ms.z;
 
 			frame.gx = vectGyro.x;
 			frame.gy = vectGyro.y;
@@ -95,9 +82,10 @@ int main()
 			frame.time++;
 
 			usart.sendFrame(frame.buff, sizeof(Frame));
-		}
 
-		//StatusLEDToggle
-		//PORTB ^= _BV(PB5);
+			//StatusLEDToggle
+			PORTB ^= _BV(PB5);
+		}
+		--count;
 	}
 }
