@@ -52,6 +52,18 @@ void USART::sendFrame(uint8_t* buffer, uint8_t size){
 	}
 }
 
+void USART::sendFrameLength(uint8_t* buffer, uint8_t size){
+	if(size){
+		send(STX);
+		if(size == DLE || size == STX) send(DLE);
+		send(size);
+		while(size--){
+			if(*buffer == DLE || *buffer == STX) send(DLE);
+			send(*buffer++);
+		}
+	}
+}
+
 uint8_t USART::receive(){
 	// Wait for byte to be received
 	while(!(UCSR0A & (1<<RXC0)));

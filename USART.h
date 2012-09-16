@@ -39,6 +39,7 @@ class USART{
 		void send(uint8_t);
 		void send(uint8_t* buff, uint8_t size);
 		void sendFrame(uint8_t* buff, uint8_t size);
+		void sendFrameLength(uint8_t* buff, uint8_t size);
 		uint8_t receive();
 };
 
